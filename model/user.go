@@ -1,12 +1,10 @@
 package model
 
-import (
-	"gopkg.in/mgo.v2/bson"
-)
+import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type (
 	User struct {
-		ID        bson.ObjectId `json:"id" bson:"_id,omitempty"`
+		ID        primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 		Name      string        `json:"name" bson:"name"`
 		Email     string        `json:"email" bson:"email"`
 		Phone  	  string        `json:"phone,omitempty" bson:"phone"`
