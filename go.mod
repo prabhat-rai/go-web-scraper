@@ -10,10 +10,9 @@ require (
 	github.com/n0madic/google-play-scraper v0.0.0-20210216085704-d6151374e493
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
-	github.com/tidwall/gjson v1.8.0 // indirect
+	github.com/tidwall/gjson v1.8.0
+	go.mongodb.org/mongo-driver v1.5.2
 	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
 	google.golang.org/api v0.47.0
-	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
-	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

@@ -1,13 +1,17 @@
 package main
 
 import (
+	"context"
 	"echoApp/handler"
+	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
-	"gopkg.in/mgo.v2"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"html/template"
 	"io"
+	"time"
 )
 
 type Template struct {
@@ -19,6 +23,26 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 }
 
 func main() {
+	// Get instance of echo framework with template setup
+	e := setupFramework()
+
+	// Database connection
+	client, dbContext := connectToMongo()
+	defer func() {
+		clientError := client.Disconnect(dbContext)
+		if clientError != nil {
+			log.Fatal("DB Client error")
+		}
+	}()
+
+	// Routes
+	registerRoutes(e, client)
+
+	// Start server
+	e.Logger.Fatal(e.Start(":1200"))
+}
+
+func setupFramework() *echo.Echo {
 	e := echo.New()
 	e.Logger.SetLevel(log.ERROR)
 	e.Use(middleware.Logger())
@@ -27,38 +51,45 @@ func main() {
 	}
 	e.Renderer = t
 
-	// Database connection
-	db, err := mgo.Dial("localhost")
+	fmt.Println("Framework & Template Setup : DONE")
+
+	return e
+}
+
+func connectToMongo() (*mongo.Client, context.Context) {
+	// DB connection via MongoDB Go Driver
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://127.0.0.1:27017/"))
 	if err != nil {
-		e.Logger.Fatal(err)
-	}
-
-	dbName := "lmg_reviews"
-
-	// Create indices
-	if err = db.Copy().DB(dbName).C("app_reviews").EnsureIndex(mgo.Index{
-		Key:    []string{"review_id"},
-		Unique: true,
-	}); err != nil {
 		log.Fatal(err)
 	}
 
-	// Create indices on users
-	if err = db.Copy().DB(dbName).C("users").EnsureIndex(mgo.Index{
-		Key:    []string{"email"},
-		Unique: true,
-	}); err != nil {
+	dbContext, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
+	err = client.Connect(dbContext)
+	if err != nil {
 		log.Fatal(err)
 	}
+
+	err = client.Ping(dbContext, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Connecting to MongoDB : DONE")
+	return client, dbContext
+}
+
+func registerRoutes(e *echo.Echo, client *mongo.Client) {
+	// Connect to DB
+	database := client.Database("lmg_reviews")
 
 	// Initialize handler
-	h := &handler.Handler{DB: db, DbName: dbName}
+	h := &handler.Handler{DB: database}
 
-	// Routes
+	// Register Routes
 	e.GET("/", h.Home)
 	e.GET("/dev-test/verify-mongodb-queries", h.VerifyMongoDbQueries)
 	e.GET("/dev-test/review", h.FetchReview)
 
-	// Start server
-	e.Logger.Fatal(e.Start(":1200"))
+	fmt.Println("Registering Routes : DONE")
 }

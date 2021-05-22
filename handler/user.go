@@ -1,12 +1,16 @@
 package handler
 
 import (
+	"context"
 	"echoApp/model"
 	"echoApp/services"
 	"fmt"
 	"github.com/labstack/echo/v4"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 	"net/http"
 )
 
@@ -17,27 +21,25 @@ func (h *Handler) Home(c echo.Context) (err error) {
 }
 
 func (h *Handler) VerifyMongoDbQueries(c echo.Context) (err error) {
-	// Connect to DB
-	db := h.DB.Clone()
-	defer db.Close()
-	userCollection := db.DB(h.DbName).C("users")
+	userCollection := h.DB.Collection("users")
+	dbContext := context.TODO()
 
-	err = insertQueries(userCollection)
+	err = insertQueries(userCollection, dbContext)
 	if err != nil {
 		return services.HandleDbError(err)
 	}
 
-	err = fetchQueries(userCollection)
+	err = fetchQueries(userCollection, dbContext)
 	if err != nil {
 		return services.HandleDbError(err)
 	}
 
-	err = updateQueries(userCollection)
+	err = updateQueries(userCollection, dbContext)
 	if err != nil {
 		return services.HandleDbError(err)
 	}
 
-	err = deleteQueries(userCollection)
+	err = deleteQueries(userCollection, dbContext)
 	if err != nil {
 		return services.HandleDbError(err)
 	}
@@ -45,16 +47,26 @@ func (h *Handler) VerifyMongoDbQueries(c echo.Context) (err error) {
 	return c.JSON(http.StatusOK, "All Ok : Verified inserting, fetching, updating and deleting of records.")
 }
 
-func insertQueries(userCollection *mgo.Collection) (err error){
+func insertQueries(userCollection *mongo.Collection, dbContext context.Context) (err error){
 	fmt.Println("Verifying Insert")
-	// Insert Record
-	err = userCollection.Insert(
+
+	// Insert 1 record
+	objectId, _ := primitive.ObjectIDFromHex("60a550a5351458b8b460d762")
+	record := &model.User{ID: objectId, Name: "Testing Four", Email: "test4@gmail.com", Phone: "+91444444444", Gender: "F"}
+	result1, err := userCollection.InsertOne(dbContext, record)
+	fmt.Println("Inserted Doc: ", result1.InsertedID)
+	if err != nil {
+		return err
+	}
+
+	// Insert Many
+	insertRecords := []interface{}{
 		&model.User{Name: "Testing One", Email: "test1@gmail.com", Phone: "+91111111111", Gender: "M"},
 		&model.User{Name: "Testing Two", Email: "test2@gmail.com", Phone: "+91222222222", Gender: "F"},
 		&model.User{Name: "Testing Three", Email: "test3@gmail.com", Phone: "+91333333333", Gender: "F"},
-		&model.User{ID: bson.ObjectIdHex("60a550a5351458b8b460d762"), Name: "Testing Four", Email: "test4@gmail.com", Phone: "+91444444444", Gender: "F"},
-	)
-
+	}
+	result, err := userCollection.InsertMany(dbContext, insertRecords)
+	fmt.Println("Inserted Docs: ", result.InsertedIDs)
 	if err != nil {
 		return err
 	}
@@ -62,13 +74,15 @@ func insertQueries(userCollection *mgo.Collection) (err error){
 	return nil
 }
 
-func fetchQueries(userCollection *mgo.Collection) (err error) {
+func fetchQueries(userCollection *mongo.Collection, dbContext context.Context) (err error) {
 	fmt.Println("Verifying Fetch")
 	var users []model.User
 	user := model.User{}
 
 	// Find By Id
-	err = userCollection.FindId(bson.ObjectIdHex("60a550a5351458b8b460d762")).One(&user)
+	objectId, _ := primitive.ObjectIDFromHex("60a550a5351458b8b460d762")
+	filter := bson.D{{"_id", objectId}}
+	err = userCollection.FindOne(dbContext, filter).Decode(&user)
 	if err != nil {
 		return err
 	}
@@ -76,7 +90,9 @@ func fetchQueries(userCollection *mgo.Collection) (err error) {
 
 
 	// Find 1 record by email and hide _id from result
-	err = userCollection.Find(bson.M{"email" : "test1@gmail.com"}).Select(bson.M{"_id" : 0}).One(&user)
+	filter = bson.D{{"email", "test1@gmail.com"}}
+	opts := options.FindOne().SetProjection(bson.M{"ID": 0})
+	err = userCollection.FindOne(dbContext, filter, opts).Decode(&user)
 	if err != nil {
 		return err
 	}
@@ -84,61 +100,117 @@ func fetchQueries(userCollection *mgo.Collection) (err error) {
 
 
 	// Get All matching Records
-	err = userCollection.Find(bson.M{"gender" : "M"}).Select(bson.M{"password" : 0}).All(&users)
+	filter = bson.D{{"gender", "M"}}
+	findOpts := options.Find().SetProjection(bson.M{"ID": 0}).SetLimit(2)
+	cursor, err := userCollection.Find(dbContext, filter, findOpts)
 	if err != nil {
 		return err
+	}
+	for cursor.Next(context.TODO()) {
+		err := cursor.Decode(&user)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		users = append(users, user)
 	}
 	fmt.Printf("\n Get All matching Records : %v \n", users)
 
 	return nil
 }
 
-func updateQueries(userCollection *mgo.Collection) (err error){
+func updateQueries(userCollection *mongo.Collection, dbContext context.Context) (err error){
 	fmt.Println("Verifying Update")
 
-	// Update Record
-	condition := bson.M{"email": "test1@gmail.com"}
-	updateData := bson.M{"$set": bson.M{"phone": "+9188887777", "gender" : "F"}}
-	err = userCollection.Update(condition, updateData)
+	// Update By Id
+	objectId, _ := primitive.ObjectIDFromHex("60a550a5351458b8b460d762")
+	filter := bson.D{{"_id", objectId}}
+	updateData := bson.D{
+		{"$set",
+			bson.D{
+				{"phone", "+917777777777"},
+				{"gender", "??"},
+			},
+		},
+	}
+	updateResult, err := userCollection.UpdateOne(dbContext, filter, updateData)
 	if err != nil {
 		return err
 	}
+	fmt.Printf("Updated documents: %+v\n", updateResult)
+
+	// Update 1 Record
+	condition := bson.D{{"email", "test1@gmail.com"}}
+	updateData = bson.D{
+		{"$set",
+			bson.D{
+				{"phone", "+9188887777"},
+				{"gender", "F"},
+			},
+		},
+	}
+
+	updateResult, err = userCollection.UpdateOne(dbContext, condition, updateData)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Updated documents: %+v\n", updateResult)
+
+	// Update Many Records
+	pipeline := bson.M{
+		"$or": []interface{}{
+			bson.D{{"email", "test1@gmail.com"}},
+			bson.D{{"email", "test2@gmail.com"}},
+			bson.D{{"email", "test3@gmail.com"}},
+			bson.D{{"phone", "+917777777777"}},
+		},
+	}
+
+	updateData = bson.D{
+		{"$set",
+			bson.D{
+				{"gender", ""},
+			},
+		},
+	}
+
+	updateResult, err = userCollection.UpdateMany(dbContext, pipeline, updateData)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Updated documents: %+v\n", updateResult)
 
 	return nil
 }
 
-func deleteQueries(userCollection *mgo.Collection) (err error){
+func deleteQueries(userCollection *mongo.Collection, dbContext context.Context) (err error){
 	fmt.Println("Verifying Delete")
 
 	// Delete Record
-	err = userCollection.Remove(bson.M{"email" : "test3@gmail.com"})
+	filter := bson.D{{"email", "test3@gmail.com"}}
+	deleteResult, err := userCollection.DeleteOne(dbContext, filter)
 	if err != nil {
 		return err
 	}
+	fmt.Printf("Deleted %v documents \n", deleteResult.DeletedCount)
+
 
 	// Delete all Matching records
-
-	// @note : We can either use bson.D or bson.M to apply logical operators
-	//pipeline := bson.D{
-	//	{"$or", []interface{}{
-	//		bson.D{{"email", "test1@gmail.com"}},
-	//		bson.D{{"email", "test2@gmail.com"}},
-	//	}},
-	//}
-
 	pipeline := bson.M{
 		"$or": []interface{}{
-			bson.M{"email": "test1@gmail.com"},
-			bson.M{"email": "test2@gmail.com"},
-			bson.M{"email": "test3@gmail.com"},
-			bson.M{"phone": "+91444444444"},
+			bson.D{{"email", "test1@gmail.com"}},
+			bson.D{{"email", "test2@gmail.com"}},
+			bson.D{{"email", "test3@gmail.com"}},
+			bson.D{{"email", "test4@gmail.com"}},
 		},
 	}
 
-	_, err = userCollection.RemoveAll(pipeline)
+	deleteResult, err = userCollection.DeleteMany(dbContext, pipeline)
 	if err != nil {
 		return err
 	}
+	fmt.Printf("Deleted %v documents \n", deleteResult.DeletedCount)
 
 	return nil
 }
