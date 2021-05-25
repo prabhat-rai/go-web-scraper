@@ -91,5 +91,7 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) {
 	e.GET("/dev-test/verify-mongodb-queries", h.VerifyMongoDbQueries)
 	e.GET("/dev-test/review", h.FetchReview)
 
+	e.Static("/static", "public/static")
+
 	fmt.Println("Registering Routes : DONE")
 }
