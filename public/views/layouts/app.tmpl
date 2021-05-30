@@ -1,0 +1,63 @@
+{{define "app"}}
+    <!doctype html>
+    <html lang='en'>
+    <head>
+        <!-- Required meta tags -->
+        <meta charset='utf-8'>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Custom fonts for this template-->
+        <link href="/static/vendor/css/all.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet"
+              href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+
+        <!-- Custom styles for this template and favicon -->
+        <link rel="stylesheet" href="./static/css/sb-admin-2.min.css" >
+        <!--<link rel='shortcut icon' href='/static/img/favicon.ico' type='image/x-icon'>-->
+
+        <title>{{template "title" .}} - LMG Review</title>
+    </head>
+    <body>
+        <div id="wrapper">
+            {{template "sidebar" .}}
+
+            <!-- Content Wrapper -->
+            <div id="content-wrapper" class="d-flex flex-column">
+
+                <!-- Main Content -->
+                <div id="content">
+
+                    {{template "header" .}}
+
+                    <!-- Begin Page Content -->
+                    <div class="container-fluid">
+                        {{with .Flash}}
+                            <div class='flash '>{{.}}</div>
+                        {{end}}
+
+                        {{template "main" .}}
+
+                    </div>
+                    <!-- /.container-fluid -->
+
+                </div>
+                <!-- End of Main Content -->
+
+                {{template "footer" .}}
+
+            </div>
+            <!-- End of Content Wrapper -->
+        </div>
+
+        <!-- Bootstrap core JavaScript-->
+        <script src="/static/vendor/js/jquery.min.js"></script>
+        <script src="/static/vendor/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Core plugin JavaScript-->
+        <script src="/static/vendor/js/jquery.easing.min.js"></script>
+
+        <!-- Custom scripts for all pages-->
+        <script src="/static/js/sb-admin-2.min.js"></script>
+    </body>
+    </html>
+{{end}}
