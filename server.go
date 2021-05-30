@@ -53,7 +53,7 @@ func parseTemplates() (*template.Template, error) {
 		templateBuilder = t
 	}
 
-	return templateBuilder.ParseGlob("public/views/*.tmpl")
+	return templateBuilder.ParseGlob("public/views/pages/*.tmpl")
 }
 
 func setupFramework() *echo.Echo {
@@ -102,6 +102,7 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) {
 
 	// Register Routes
 	e.GET("/", h.Home)
+	e.GET("/login", h.Login)
 	e.GET("/dev-test/verify-mongodb-queries", h.VerifyMongoDbQueries)
 	e.GET("/dev-test/review", h.FetchReview)
 

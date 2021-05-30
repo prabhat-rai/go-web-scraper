@@ -20,6 +20,12 @@ func (h *Handler) Home(c echo.Context) (err error) {
 	})
 }
 
+func (h *Handler) Login(c echo.Context) (err error) {
+	return c.Render(http.StatusOK, "login.tmpl", map[string]interface{}{
+		"name": "Admin",
+	})
+}
+
 func (h *Handler) VerifyMongoDbQueries(c echo.Context) (err error) {
 	userCollection := h.DB.Collection("users")
 	dbContext := context.TODO()
