@@ -18,7 +18,13 @@ import (
 
 func (h *Handler) Home(c echo.Context) (err error) {
 	return c.Render(http.StatusOK, "index.tmpl", map[string]interface{}{
-		"name": "World!",
+		"name": "Admin",
+	})
+}
+
+func (h *Handler) Login(c echo.Context) (err error) {
+	return c.Render(http.StatusOK, "login.tmpl", map[string]interface{}{
+		"name": "Admin",
 	})
 }
 
