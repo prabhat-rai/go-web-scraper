@@ -42,12 +42,26 @@ func main() {
 	e.Logger.Fatal(e.Start(":1200"))
 }
 
+func parseTemplates() (*template.Template, error) {
+	templateBuilder := template.New("")
+	if t, _ := templateBuilder.ParseGlob("public/views/layouts/*.tmpl"); t != nil {
+		fmt.Println("Layouts : DONE")
+		templateBuilder = t
+	}
+	if t, _ := templateBuilder.ParseGlob("public/views/modules/*.tmpl"); t != nil {
+		fmt.Println("Modules : DONE")
+		templateBuilder = t
+	}
+
+	return templateBuilder.ParseGlob("public/views/pages/*.tmpl")
+}
+
 func setupFramework() *echo.Echo {
 	e := echo.New()
 	e.Logger.SetLevel(log.ERROR)
 	e.Use(middleware.Logger())
 	t := &Template{
-		templates: template.Must(template.ParseGlob("public/views/*.tmpl")),
+		templates: template.Must(parseTemplates()),
 	}
 	e.Renderer = t
 
@@ -88,6 +102,7 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) {
 
 	// Register Routes
 	e.GET("/", h.Home)
+	e.GET("/login", h.Login)
 	e.GET("/dev-test/verify-mongodb-queries", h.VerifyMongoDbQueries)
 	e.GET("/dev-test/review", h.FetchReview)
 
