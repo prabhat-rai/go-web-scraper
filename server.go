@@ -9,18 +9,8 @@ import (
 	"github.com/labstack/gommon/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"html/template"
-	"io"
 	"time"
 )
-
-type Template struct {
-	templates *template.Template
-}
-
-func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	return t.templates.ExecuteTemplate(w, name, data)
-}
 
 func main() {
 	// Get instance of echo framework with template setup
@@ -42,28 +32,15 @@ func main() {
 	e.Logger.Fatal(e.Start(":1200"))
 }
 
-func parseTemplates() (*template.Template, error) {
-	templateBuilder := template.New("")
-	if t, _ := templateBuilder.ParseGlob("public/views/layouts/*.tmpl"); t != nil {
-		fmt.Println("Layouts : DONE")
-		templateBuilder = t
-	}
-	if t, _ := templateBuilder.ParseGlob("public/views/modules/*.tmpl"); t != nil {
-		fmt.Println("Modules : DONE")
-		templateBuilder = t
-	}
-
-	return templateBuilder.ParseGlob("public/views/pages/*.tmpl")
-}
-
 func setupFramework() *echo.Echo {
 	e := echo.New()
 	e.Logger.SetLevel(log.ERROR)
 	e.Use(middleware.Logger())
-	t := &Template{
-		templates: template.Must(parseTemplates()),
+
+	templateRenderer := &Template{
+		templateCache: GetTemplateCache(),
 	}
-	e.Renderer = t
+	e.Renderer = templateRenderer
 
 	fmt.Println("Framework & Template Setup : DONE")
 
@@ -103,6 +80,7 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) {
 	// Register Routes
 	e.GET("/", h.Home)
 	e.GET("/login", h.Login)
+	e.GET("/list", h.List)
 	e.GET("/dev-test/verify-mongodb-queries", h.VerifyMongoDbQueries)
 	e.GET("/dev-test/review", h.FetchReview)
 

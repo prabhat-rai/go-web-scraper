@@ -20,6 +20,12 @@ func (h *Handler) Home(c echo.Context) (err error) {
 	})
 }
 
+func (h *Handler) List(c echo.Context) (err error) {
+	return c.Render(http.StatusOK, "list.tmpl", map[string]interface{}{
+		"name": "Admin",
+	})
+}
+
 func (h *Handler) Login(c echo.Context) (err error) {
 	return c.Render(http.StatusOK, "login.tmpl", map[string]interface{}{
 		"name": "Admin",
