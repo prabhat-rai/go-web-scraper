@@ -4,6 +4,8 @@ import (
 	"context"
 	"echoApp/handler"
 	"fmt"
+	"github.com/gorilla/sessions"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
@@ -25,7 +27,6 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 func main() {
 	// Get instance of echo framework with template setup
 	e := setupFramework()
-
 	// Database connection
 	client, dbContext := connectToMongo()
 	defer func() {
@@ -64,7 +65,7 @@ func setupFramework() *echo.Echo {
 		templates: template.Must(parseTemplates()),
 	}
 	e.Renderer = t
-
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
 	fmt.Println("Framework & Template Setup : DONE")
 
 	return e
@@ -99,12 +100,17 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) {
 
 	// Initialize handler
 	h := &handler.Handler{DB: database}
-
 	// Register Routes
 	e.GET("/", h.Home)
 	e.GET("/login", h.Login)
 	e.GET("/dev-test/verify-mongodb-queries", h.VerifyMongoDbQueries)
 	e.GET("/dev-test/review", h.FetchReview)
+	e.POST("/login", h.Login)
+	e.GET("/login", h.LoginForm)
+	e.GET("/register", h.RegisterForm)
+	e.POST("/register", h.Register)
+	e.POST("/logout", h.Logout)
+	e.GET("/logout", h.Logout)
 
 	e.Static("/static", "public/static")
 
