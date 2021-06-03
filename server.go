@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"echoApp/handler"
 	"fmt"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -17,6 +16,7 @@ import (
 func main() {
 	// Get instance of echo framework with template setup
 	e := setupFramework()
+
 	// Database connection
 	client, dbContext := connectToMongo()
 	defer func() {
@@ -70,28 +70,4 @@ func connectToMongo() (*mongo.Client, context.Context) {
 
 	fmt.Println("Connecting to MongoDB : DONE")
 	return client, dbContext
-}
-
-func registerRoutes(e *echo.Echo, client *mongo.Client) {
-	// Connect to DB
-	database := client.Database("lmg_reviews")
-
-	// Initialize handler
-	h := &handler.Handler{DB: database}
-	// Register Routes
-	e.GET("/", h.Home)
-	e.GET("/login", h.Login)
-	e.GET("/list", h.List)
-	e.GET("/dev-test/verify-mongodb-queries", h.VerifyMongoDbQueries)
-	e.GET("/dev-test/review", h.FetchReview)
-	e.POST("/login", h.Login)
-	e.GET("/login", h.LoginForm)
-	e.GET("/register", h.RegisterForm)
-	e.POST("/register", h.Register)
-	e.POST("/logout", h.Logout)
-	e.GET("/logout", h.Logout)
-
-	e.Static("/static", "public/static")
-
-	fmt.Println("Registering Routes : DONE")
 }

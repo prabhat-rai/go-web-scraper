@@ -45,6 +45,7 @@ func GetTemplateCache() map[string]*template.Template {
 	templateCache["index.tmpl"] = template.Must(template.ParseFiles("public/views/pages/index.tmpl", "public/views/layouts/app.tmpl", "public/views/modules/header.tmpl", "public/views/modules/sidebar.tmpl", "public/views/modules/footer.tmpl"))
 	templateCache["list.tmpl"] = template.Must(template.ParseFiles("public/views/pages/list.tmpl", "public/views/layouts/app.tmpl", "public/views/modules/header.tmpl", "public/views/modules/sidebar.tmpl", "public/views/modules/footer.tmpl"))
 	templateCache["login.tmpl"] = template.Must(template.ParseFiles("public/views/pages/login.tmpl", "public/views/layouts/auth.tmpl"))
+	templateCache["register.tmpl"] = template.Must(template.ParseFiles("public/views/pages/register.tmpl", "public/views/layouts/auth.tmpl"))
 
 	return templateCache
 }
