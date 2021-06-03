@@ -72,16 +72,16 @@ func (h *Handler) RegisterForm(c echo.Context) (err error) {
 
 func (h *Handler) Register(c echo.Context) (err error) {
 	// @TODO : VALIDATE THE REQUEST
-	u := &model.User{
+	user := &model.User{
 		Name: c.FormValue("name"),
 		Email: c.FormValue("email"),
 		Password: c.FormValue("password"),
 		Phone: c.FormValue("phone"),
 	}
 
-	fmt.Printf("%+v\n", u)
+	fmt.Printf("%+v\n", user)
 	//fmt.Printf("%v", c.FormValue("name"))
-	err = c.Bind(u)
+	err = c.Bind(user)
 	if err != nil {
 		//place holder to render register page with error message
 		return c.Render(http.StatusOK, "register.tmpl", map[string]interface{}{
@@ -89,8 +89,8 @@ func (h *Handler) Register(c echo.Context) (err error) {
 		})
 	}
 
-	fmt.Printf("%+v\n", u)
-	err = h.UserRepository.CreateUser(u)
+	fmt.Printf("%+v\n", user)
+	err = h.UserRepository.CreateUser(user)
 	if err != nil {
 		return c.Render(http.StatusOK, "register.tmpl", map[string]interface{}{
 			"Flash": "Something went wrong!! Please Try Again.",
@@ -98,6 +98,8 @@ func (h *Handler) Register(c echo.Context) (err error) {
 	}
 
 	services.SetSessionValue(c, "authenticated", true)
+	services.SetSessionValue(c, "userName", user.Name)
+	services.SetSessionValue(c, "userEmail", user.Email)
 	c.Redirect(http.StatusSeeOther, "/")
 
 	return nil
