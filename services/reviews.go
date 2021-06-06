@@ -1,6 +1,7 @@
 package services
 
 import (
+	"echoApp/conf"
 	"encoding/xml"
 	"fmt"
 	"github.com/n0madic/google-play-scraper/pkg/reviews"
@@ -30,17 +31,57 @@ type Author struct {
 	Uri string `xml:"uri"`
 }
 
-func FetchReview(platform string) {
+func FetchReview(platform string, conf *conf.Config) {
 	if platform == "ios" {
-		fetchAppStoreReviews()
+		FetchIosReviewsForAllApps(conf.IosApps)
 	} else {
-		fetchPlayStoreReviews()
+		FetchAndroidReviewsForAllApps(conf.AndroidApps)
 	}
 
 }
 
-func fetchAppStoreReviews () {
-	url := "https://itunes.apple.com/ae/rss/customerreviews/id=1161310479/page=1/sortBy=mostRecent/xml";
+func FetchIosReviewsForAllApps (config conf.AllIosApps) {
+	for _, elem := range config.Apps {
+		fmt.Printf("STARTING : IOS Reviews for %s \n\n", elem.Name)
+		LoadIosReviews(elem.AppId)
+		fmt.Printf("DONE : IOS Reviews for %s \n\n", elem.Name)
+	}
+
+	return
+}
+
+func FetchAndroidReviewsForAllApps(config conf.AllAndroidApps) {
+	for _, elem := range config.Apps {
+		fmt.Printf("STARTING : ANDROID Reviews for %s \n\n", elem.Name)
+		LoadAndroidReviews(elem.GoogleAppId)
+		fmt.Printf("DONE : ANDROID Reviews for %s \n\n", elem.Name)
+	}
+
+	return
+}
+
+func LoadAndroidReviews(id string) {
+	r := reviews.New("com.landmarkgroup." + id, reviews.Options{
+		Number: 50,
+		Sorting: store.SortNewest,
+		Language: "en",
+	})
+
+	err := r.Run()
+	if err != nil {
+		panic(err)
+	}
+
+	for i, review := range r.Results {
+		fmt.Printf("%v. %v gave rating %v and wrote: %v on %v\n\n", i+1, review.Reviewer, review.Score, review.Text, review.Timestamp)
+	}
+}
+
+func LoadIosReviews(id string) {
+	urlPrefix := "https://itunes.apple.com/ae/rss/customerreviews/id="
+	urlSuffix := "/page=1/sortBy=mostRecent/xml"
+	url := urlPrefix + id + urlSuffix
+
 	resp, err := http.Get(url)
 	if err != nil {
 		fmt.Printf("Error GET: %v\n", err)
@@ -59,22 +100,5 @@ func fetchAppStoreReviews () {
 
 	for i, entry := range feed.Entry {
 		fmt.Printf("%v. %v gave rating %v and wrote: %v on %v\n\n", i+1, entry.Author.Name, entry.Rating, entry.Title, entry.Updated)
-	}
-}
-
-func fetchPlayStoreReviews() {
-	r := reviews.New("com.landmarkgroup.maxstores", reviews.Options{
-		Number: 100,
-		Sorting: store.SortNewest,
-		Language: "en",
-	})
-
-	err := r.Run()
-	if err != nil {
-		panic(err)
-	}
-
-	for i, review := range r.Results {
-		fmt.Printf("%v. %v gave rating %v and wrote: %v on %v\n\n", i+1, review.Reviewer, review.Score, review.Text, review.Timestamp)
 	}
 }

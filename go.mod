@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/google/go-cmp v0.5.5 // indirect
 	github.com/gorilla/sessions v1.2.1
+	github.com/joho/godotenv v1.3.0 // indirect
 	github.com/k3a/html2text v1.0.7 // indirect
 	github.com/labstack/echo-contrib v0.11.0
 	github.com/labstack/echo/v4 v4.3.0
