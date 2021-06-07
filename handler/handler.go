@@ -10,6 +10,7 @@ type (
 	Handler struct {
 		DB *mongo.Database
 		UserRepository *repositories.UserRepository
+		AppReviewRepository *repositories.AppReviewRepository
 		Config *conf.Config
 	}
 )

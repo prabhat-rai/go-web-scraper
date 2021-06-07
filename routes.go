@@ -21,6 +21,9 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) *handler.Handler {
 		UserRepository : &repositories.UserRepository{
 			DB: database,
 		},
+		AppReviewRepository: &repositories.AppReviewRepository{
+			DB: database,
+		},
 	}
 
 	// Register Routes
