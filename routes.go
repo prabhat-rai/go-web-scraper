@@ -33,7 +33,7 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) *handler.Handler {
 	e.POST("/register", h.Register, middlewares.Guest)
 
 	e.GET("/", h.Home, middlewares.Authenticated)
-	e.GET("/list", h.List, middlewares.Authenticated)
+	e.GET("/apps", h.AppsList, middlewares.Authenticated)
 	e.GET("/logout", h.Logout, middlewares.Authenticated)
 
 	e.GET("/dev-test/verify-mongodb-queries", h.VerifyMongoDbQueries, middlewares.Authenticated)

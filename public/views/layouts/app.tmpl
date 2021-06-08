@@ -16,6 +16,7 @@
         <link rel="stylesheet" href="./static/css/custom.css" >
         <!--<link rel='shortcut icon' href='/static/img/favicon.ico' type='image/x-icon'>-->
 
+        {{template "header_js_css" .}}
         <title>{{template "title" .}} - LMG Review</title>
     </head>
     <body>
@@ -79,6 +80,8 @@
 
         <!-- Custom scripts for all pages-->
         <script src="/static/js/sb-admin-2.min.js"></script>
+
+        {{template "footer_js_css" .}}
     </body>
     </html>
 {{end}}

@@ -19,7 +19,7 @@ func New(client *mongo.Client) *Config {
 	database := client.Database(dbName)
 
 	return &Config{
-		AllApps: GetAppsConfig(database),
+		AllApps: GetAppsConfig(database, true),
 		//AndroidApps: GetAndroidAppsViaConfig(),
 		//IosApps: GetIosAppsViaConfig(),
 	}

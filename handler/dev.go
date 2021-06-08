@@ -145,6 +145,13 @@ func updateQueries(userCollection *mongo.Collection, dbContext context.Context) 
 		},
 	}
 
+	//filter = bson.D{
+	//	{"$or", []interface{}{
+	//		bson.D{{"active", true}},
+	//		bson.D{{"active", false}},
+	//	}},
+	//}
+
 	updateResult, err = userCollection.UpdateOne(dbContext, condition, updateData)
 	if err != nil {
 		return err
