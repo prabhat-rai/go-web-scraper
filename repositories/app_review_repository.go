@@ -4,7 +4,10 @@ import (
 	"context"
 	"echoApp/model"
 	"fmt"
+	"log"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type (
@@ -12,6 +15,28 @@ type (
 		DB *mongo.Database
 	}
 )
+
+
+type AppReviewData struct {
+	
+	ReviewId      	string        		`json:"review_id" bson:"review_id"`
+	ReviewDate  	string        		`json:"review_date" bson:"review_date"`
+	UserName 		string		  		`json:"user_name" bson:"user_name"`
+	Title			string				`json:"review_title" bson:"review_title"`
+	Description  	string        		`json:"review_description" bson:"review_description"`
+	Rating    		string        		`json:"rating" bson:"rating"`
+	CreatedAt 		string				`json:"created_at" bson:"created_at"`
+	UpdatedAt 		string				`json:"updated_at" bson:"updated_at"`
+	Platform 		string				`json:"platform" bson:"platform"`
+	Version 		string				`json:"version" bson:"version"`
+	Concept 		string				`json:"concept" bson:"concept"`
+	Keywords   		[]string      		`json:"keywords" bson:"keywords,omitempty"`
+}
+
+type AllReviews struct {
+	AppReview []AppReviewData `json:"app_reviews"`
+}
+	 
 
 func (appReviewRepo *AppReviewRepository) AddBulkReviews(appReviews []*model.AppReview) (err error) {
 	var insertRecords []interface{}
@@ -31,4 +56,28 @@ func (appReviewRepo *AppReviewRepository) AddBulkReviews(appReviews []*model.App
 
 	fmt.Println("Inserted Docs: ", result.InsertedIDs)
 	return nil
+}
+
+func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews() (allReviews AllReviews) {
+	findOptions := options.Find()
+	findOptions.SetLimit(2)
+	// var results []*Review
+	ctx := context.TODO()
+	review := AppReviewData{}
+	appReviewCollection := appReviewRepo.DB.Collection("app_reviews")
+	cursor, err := appReviewCollection.Find(ctx, bson.D{})	
+	if err != nil {
+		return allReviews
+	}
+	for cursor.Next(context.TODO()) {
+		err := cursor.Decode(&review)
+
+		if err != nil {
+			log.Fatal(err) 
+		}
+
+		allReviews.AppReview = append(allReviews.AppReview, review)
+	}
+	return allReviews
+	
 }
