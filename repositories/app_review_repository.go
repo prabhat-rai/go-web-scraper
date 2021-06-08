@@ -58,16 +58,14 @@ func (appReviewRepo *AppReviewRepository) AddBulkReviews(appReviews []*model.App
 	return nil
 }
 
-func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews() (err error) {
-	var allReviews AllReviews
-	var list = make([]interface{}, 0)
+func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews() (allReviews AllReviews) {
 	findOptions := options.Find()
 	findOptions.SetLimit(2)
 	// var results []*Review
 	ctx := context.TODO()
 	review := AppReviewData{}
 	appReviewCollection := appReviewRepo.DB.Collection("app_reviews")
-	cursor, err := appReviewCollection.Find(context.TODO(), bson.D{})	
+	cursor, err := appReviewCollection.Find(ctx, bson.D{})	
 	if err != nil {
 		return allReviews
 	}
@@ -78,9 +76,8 @@ func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews() (err error) {
 			log.Fatal(err) 
 		}
 
-		allReviews.Reviews = append(allReviews.Reviews, review)
+		allReviews.AppReview = append(allReviews.AppReview, review)
 	}
-
 	return allReviews
 	
 }
