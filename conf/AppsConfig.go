@@ -2,6 +2,7 @@ package conf
 
 import (
 	"context"
+	"echoApp/model"
 	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -28,26 +29,27 @@ type (
 		Apps []IosAppConfig `json:"apps"`
 	}
 
-	AppConfigs struct {
-		Name 		string 	`json:"name" bson:"name"`
-		GoogleAppId string 	`json:"google_app_id" bson:"google_app_id"`
-		IosAppId 	string 	`json:"ios_app_id" bson:"ios_app_id"`
-	}
-
+	// This is group of model Apps
 	AllApps struct {
-		Apps []AppConfigs `json:"all_apps"`
+		Apps []model.Apps `json:"all_apps"`
 	}
 )
 
-func GetAppsConfig(db *mongo.Database) AllApps {
+func GetAppsConfig(db *mongo.Database, onlyActiveRecords bool) AllApps {
 
 	var allApps AllApps
 	appCollection := db.Collection("apps")
 	dbContext := context.TODO()
-	app := AppConfigs{}
+	app := model.Apps{}
+
+	filter := bson.D{{}}
+
 
 	// Get All matching Records
-	filter := bson.D{{"active", true}}
+	if onlyActiveRecords {
+		filter = bson.D{{"active", true}}
+	}
+
 	findOpts := options.Find().SetProjection(bson.M{"ID": 0})
 	cursor, err := appCollection.Find(dbContext, filter, findOpts)
 	if err != nil {

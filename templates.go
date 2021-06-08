@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"html/template"
 	"io"
+	"path/filepath"
 	"time"
 )
 
@@ -39,14 +40,32 @@ var functions = template.FuncMap{
 	"noEscape": noescape,
 }
 
-// public/views/pages/*.tmpl
 func GetTemplateCache() map[string]*template.Template {
 	templateCache := make(map[string]*template.Template)
-	templateCache["index.tmpl"] = template.Must(template.ParseFiles("public/views/pages/index.tmpl", "public/views/layouts/app.tmpl", "public/views/modules/header.tmpl", "public/views/modules/sidebar.tmpl", "public/views/modules/footer.tmpl"))
-	templateCache["list.tmpl"] = template.Must(template.ParseFiles("public/views/pages/list.tmpl", "public/views/layouts/app.tmpl", "public/views/modules/header.tmpl", "public/views/modules/sidebar.tmpl", "public/views/modules/footer.tmpl"))
-	templateCache["login.tmpl"] = template.Must(template.ParseFiles("public/views/pages/login.tmpl", "public/views/layouts/auth.tmpl"))
-	templateCache["register.tmpl"] = template.Must(template.ParseFiles("public/views/pages/register.tmpl", "public/views/layouts/auth.tmpl"))
-	templateCache["reviews.tmpl"] = template.Must(template.ParseFiles("public/views/pages/reviews.tmpl", "public/views/layouts/auth.tmpl"))
+	pages, _ := filepath.Glob(filepath.Join("public/views/pages/", "*.tmpl"))
+
+	for _, page := range pages {
+		name := filepath.Base(page)
+
+		if name == "login.tmpl" || name == "register.tmpl" {
+			templateCache[name] = template.Must(
+				template.ParseFiles(
+					page,
+					"public/views/layouts/auth.tmpl",
+				),
+			)
+		} else {
+			templateCache[name] = template.Must(
+				template.ParseFiles(
+					page,
+					"public/views/layouts/app.tmpl",
+					"public/views/modules/header.tmpl",
+					"public/views/modules/sidebar.tmpl",
+					"public/views/modules/footer.tmpl",
+				),
+			)
+		}
+	}
 
 	return templateCache
 }
