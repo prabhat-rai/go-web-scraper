@@ -23,3 +23,15 @@ func (h *Handler) FetchReview(c echo.Context) (err error) {
 
 	return c.JSON(http.StatusOK, "All Ok : Fetched reviews for " + platform + ".")
 }
+
+func (h *Handler) RetrieveReviews(c echo.Context) (err error) {
+
+	
+	err = h.AppReviewRepository.RetrieveBulkReviews()
+
+	if err != nil {
+		return err
+	}
+	return nil
+	//return c.JSON(http.StatusOK)
+}
