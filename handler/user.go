@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"echoApp/conf"
 	"echoApp/model"
 	"echoApp/services"
 	"fmt"
@@ -16,9 +17,13 @@ func (h *Handler) Home(c echo.Context) (err error) {
 	})
 }
 
-func (h *Handler) List(c echo.Context) (err error) {
-	return c.Render(http.StatusOK, "list.tmpl", map[string]interface{}{
-		"name": "Admin",
+func (h *Handler) AppsList(c echo.Context) (err error) {
+	userData := services.GetAuthenticatedUser(c)
+	appDetails := conf.GetAppsConfig(h.DB, false)
+	fmt.Printf("%+v", appDetails)
+	return c.Render(http.StatusOK, "apps_list.tmpl", map[string]interface{}{
+		"name": userData.Name,
+		"apps": appDetails.Apps,
 	})
 }
 

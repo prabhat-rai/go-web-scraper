@@ -2,18 +2,26 @@ package main
 
 import (
 	"context"
+	"echoApp/conf"
 	"fmt"
 	"github.com/gorilla/sessions"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"os"
 	"time"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	// Get instance of echo framework with template setup
 	e := setupFramework()
 
@@ -27,10 +35,13 @@ func main() {
 	}()
 
 	// Routes
-	registerRoutes(e, client)
+	handler := registerRoutes(e, client)
+	handler.Config = conf.New(client)
+	fmt.Printf("%+v", handler.Config)
 
 	// Start server
-	e.Logger.Fatal(e.Start(":1200"))
+	appPort := os.Getenv("APP_PORT")
+	e.Logger.Fatal(e.Start(":" + appPort))
 }
 
 func setupFramework() *echo.Echo {
@@ -50,8 +61,11 @@ func setupFramework() *echo.Echo {
 }
 
 func connectToMongo() (*mongo.Client, context.Context) {
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+
 	// DB connection via MongoDB Go Driver
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://127.0.0.1:27017/"))
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://" + dbHost + ":"+ dbPort +"/"))
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,0 +1,70 @@
+{{template "app" .}}
+{{define "title"}}List{{end}}
+{{define "header_js_css"}}
+    <!-- Custom styles for this page -->
+    <link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+{{end}}
+
+
+{{define "main"}}
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Applications</h1>
+    </div>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">All Applications</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Concept</th>
+                            <th>Google App ID</th>
+                            <th>iOS App ID</th>
+                            <th>Active ?</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Concept</th>
+                            <th>Google App ID</th>
+                            <th>iOS App ID</th>
+                            <th>Active ?</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        {{range .apps}}
+                            <tr>
+                                <td>{{.Name}}</td>
+                                <td>{{.GoogleAppId}}</td>
+                                <td>{{.IosAppId}}</td>
+                                <td>
+                                    {{if .Active}}
+                                        <a href="#" class="btn btn-success btn-circle">
+                                            <i class="fas fa-check"></i>
+                                        </a>
+                                    {{else}}
+                                        <a href="#" class="btn btn-danger btn-circle">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    {{end}}
+                                </td>
+                            </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{{end}}
+
+{{define "footer_js_css"}}
+    <!-- Page level plugins -->
+    <script src="/static/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="/static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+{{end}}

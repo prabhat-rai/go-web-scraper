@@ -1,0 +1,73 @@
+{{template "app" .}}
+{{define "title"}}Reviews{{end}}
+{{define "header_js_css"}}
+    <!-- Custom styles for this page -->
+    <link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+{{end}}
+
+
+{{define "main"}}
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Reviews</h1>
+    </div>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">All Reviews</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Name</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Rating</th>
+                            <th>Concept</th>
+                            <th>Platform</th>
+                            <th>Version</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Rating</th>
+                            <th>Concept</th>
+                            <th>Platform</th>
+                            <th>Version</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        {{range .reviews}}
+                            <tr>
+                                <td>{{.ReviewDate}}</td>
+                                <td>{{.UserName}}</td>
+                                <td>{{.Title}}</td>
+                                <td>{{.Description}}</td>
+                                <td>{{.Rating}}</td>
+                                <td>{{.Concept}}</td>
+                                <td>{{.Platform}}</td>
+                                <td>{{.Version}}</td>
+                              
+                            </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{{end}}
+
+{{define "footer_js_css"}}
+    <!-- Page level plugins -->
+    <script src="/static/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="/static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+{{end}}

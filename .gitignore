@@ -16,3 +16,5 @@
 
 server
 echoApp
+.env
+.DS_STORE
