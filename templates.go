@@ -40,7 +40,6 @@ var functions = template.FuncMap{
 	"noEscape": noescape,
 }
 
-// public/views/pages/*.tmpl
 func GetTemplateCache() map[string]*template.Template {
 	templateCache := make(map[string]*template.Template)
 	pages, _ := filepath.Glob(filepath.Join("public/views/pages/", "*.tmpl"))
