@@ -14,6 +14,12 @@ func (h *Handler) FetchReview(c echo.Context) (err error) {
 		platform = "ios"
 	}
 
-	services.FetchReview(platform)
+	reviews := services.FetchReview(platform, h.Config)
+	err = h.AppReviewRepository.AddBulkReviews(reviews)
+
+	if err != nil {
+		return err
+	}
+
 	return c.JSON(http.StatusOK, "All Ok : Fetched reviews for " + platform + ".")
 }

@@ -7,16 +7,21 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/mongo"
+	"os"
 )
 
-func registerRoutes(e *echo.Echo, client *mongo.Client) {
+func registerRoutes(e *echo.Echo, client *mongo.Client) *handler.Handler {
 	// Connect to DB
-	database := client.Database("lmg_reviews")
+	dbName := os.Getenv("DB_DATABASE")
+	database := client.Database(dbName)
 
 	// Initialize handler
 	h := &handler.Handler{
 		DB: database,
 		UserRepository : &repositories.UserRepository{
+			DB: database,
+		},
+		AppReviewRepository: &repositories.AppReviewRepository{
 			DB: database,
 		},
 	}
@@ -37,4 +42,6 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) {
 	e.Static("/static", "public/static")
 
 	fmt.Println("Registering Routes : DONE")
+
+	return h
 }
