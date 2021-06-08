@@ -30,5 +30,6 @@ func (h *Handler) RetrieveReviews(c echo.Context) (err error) {
 	appReviews := h.AppReviewRepository.RetrieveBulkReviews()
 	fmt.Printf("%+v", appReviews)
 	return c.Render(http.StatusOK, "reviews.tmpl", map[string]interface{}{
-		"reviews": appReviews})
+		"reviews": appReviews.AppReview,
+	})
 }

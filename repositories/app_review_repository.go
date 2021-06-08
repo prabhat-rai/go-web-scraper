@@ -34,7 +34,7 @@ type AppReviewData struct {
 }
 
 type AllReviews struct {
-	AppReview []AppReviewData `json:"app_reviews"`
+	AppReview []model.AppReview `json:"app_reviews"`
 }
 	 
 
@@ -63,9 +63,10 @@ func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews() (allReviews AllR
 	findOptions.SetLimit(2)
 	// var results []*Review
 	ctx := context.TODO()
-	review := AppReviewData{}
+	review := model.AppReview{}
 	appReviewCollection := appReviewRepo.DB.Collection("app_reviews")
-	cursor, err := appReviewCollection.Find(ctx, bson.D{})	
+	findOpts := options.Find().SetProjection(bson.M{"ID": 0}).SetLimit(10)
+	cursor, err := appReviewCollection.Find(ctx, bson.D{}, findOpts)
 	if err != nil {
 		return allReviews
 	}
