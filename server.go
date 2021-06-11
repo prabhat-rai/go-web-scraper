@@ -37,7 +37,6 @@ func main() {
 	// Routes
 	handler := registerRoutes(e, client)
 	handler.Config = conf.New(client)
-	fmt.Printf("%+v", handler.Config)
 
 	// Start server
 	appPort := os.Getenv("APP_PORT")

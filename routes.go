@@ -34,11 +34,14 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) *handler.Handler {
 
 	e.GET("/", h.Home, middlewares.Authenticated)
 	e.GET("/apps", h.AppsList, middlewares.Authenticated)
+	e.GET("/reviews", h.ListReviews, middlewares.Authenticated)
 	e.GET("/logout", h.Logout, middlewares.Authenticated)
 
 	e.GET("/dev-test/verify-mongodb-queries", h.VerifyMongoDbQueries, middlewares.Authenticated)
 	e.GET("/dev-test/review", h.FetchReview, middlewares.Authenticated)
-	e.GET("/dev-test/appreviews", h.RetrieveReviews, middlewares.Authenticated)
+
+
+	e.GET("/ajax/reviews-list", h.RetrieveReviews, middlewares.Authenticated)
 
 	e.Static("/static", "public/static")
 

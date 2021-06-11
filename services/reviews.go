@@ -96,7 +96,6 @@ func LoadAndroidReviews(id string, appName string) []*model.AppReview {
 			Version: review.Version,
 			Concept: appName,
 		})
-		//fmt.Printf("%v. %v gave rating %v and wrote: %v on %v\n\n", i+1, review.Reviewer, review.Score, review.Text, review.Timestamp)
 	}
 
 	return appReviews
@@ -138,7 +137,6 @@ func LoadIosReviews(id string, appName string) []*model.AppReview {
 			Version: entry.Version,
 			Concept: appName,
 		})
-		//fmt.Printf("%v. %v gave rating %v and wrote: %v on %v\n\n", i+1, entry.Author.Name, entry.Rating, entry.Title, entry.Updated)
 	}
 
 	return appReviews
