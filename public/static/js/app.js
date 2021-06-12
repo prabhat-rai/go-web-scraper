@@ -103,7 +103,7 @@ var webScrapperApp= {
                     {
                         targets: columnListToCollapse.map(Number),
                         createdCell: function(cell, cellData) {
-                            if(collapseColumns === false || cellData.length < 10) {
+                            if(collapseColumns === false || cellData.length < 100) {
                                 return;
                             }
 
