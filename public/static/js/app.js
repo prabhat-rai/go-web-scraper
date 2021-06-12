@@ -42,6 +42,9 @@ var webScrapperApp= {
             ? tableObj.attr( 'data-sort-col' ) : webScrapperApp.sortCol;
         var sortColOrder = tableObj.attr( 'data-sort-order' )
             ? tableObj.attr( 'data-sort-order' ) : webScrapperApp.sortColOrder;
+        var collapseColumns = tableObj.attr( 'data-collapse-data-columns' )
+            ? tableObj.attr('data-collapse-data-columns') : false;
+        var columnListToCollapse = collapseColumns !== false ? collapseColumns.split(',') : [];
 
         // Columns array to hold details of datatable columns
         var columns = [];
@@ -96,8 +99,45 @@ var webScrapperApp= {
                 lengthMenu: webScrapperApp.dataTableLengthArray,
                 order: [ [ sortCol, ( sortColOrder ).toLowerCase() ] ],
                 displayLength: tableLimit,
+                columnDefs: [
+                    {
+                        targets: columnListToCollapse.map(Number),
+                        createdCell: function(cell, cellData) {
+                            if(collapseColumns === false || cellData.length < 10) {
+                                return;
+                            }
 
+                            var $cell = $(cell);
+                            $cell.contents().wrapAll("<div class='content'></div>");
+                            var $content = $cell.find(".content");
 
+                            $cell.append($("<button class='btn btn-info btn-icon-split btn-sm'>" +
+                                    "<span class='text'>Read more</span>" +
+                                    "<span class='icon text-white-50'>" +
+                                        "<i class='fas fa-angle-down'></i>" +
+                                    "</span>" +
+                                "</button>"
+                            ));
+
+                            $btn = $cell.find("button");
+                            $content.css({
+                                "height": "50px",
+                                "overflow": "hidden"
+                            });
+                            $cell.data("isLess", true);
+
+                            $btn.click(function() {
+                                var isLess = $cell.data("isLess");
+                                $content.css("height", isLess ? "auto" : "50px");
+                                $(this).find('.text')
+                                    .text(isLess ? "Read less" : "Read more");
+                                $(this).find('.icon')
+                                    .html(isLess ? "<i class='fas fa-angle-up'></i>" : "<i class='fas fa-angle-down'></i>");
+                                $cell.data("isLess", !isLess);
+                            })
+                        }
+                    }
+                ]
             });
         } );
     },
@@ -111,6 +151,8 @@ var webScrapperApp= {
         });
 
         this.additionalDataTableFilters = filters;
+
+        $(this.tableClassName).DataTable().ajax.reload();
     }
 };
 

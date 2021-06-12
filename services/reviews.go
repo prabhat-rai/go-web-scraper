@@ -87,7 +87,7 @@ func LoadAndroidReviews(id string, appName string) []*model.AppReview {
 			ReviewId: review.ID,
 			ReviewDate: review.Timestamp.String(),
 			UserName: review.Reviewer,
-			Title: review.Text,
+			Title: "",
 			Description: review.Text,
 			Rating: strconv.Itoa(review.Score),
 			CreatedAt: review.Timestamp.String(),
