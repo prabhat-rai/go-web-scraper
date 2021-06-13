@@ -6,6 +6,17 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"strconv"
+)
+
+type (
+	DataTableFilters struct {
+		Limit int64
+		Offset int64
+		Search string
+		SortOrder int64
+		SortColumnName string
+	}
 )
 
 func HandleDbError(err interface{}) (error error) {
@@ -50,4 +61,26 @@ func GetAuthenticatedUser(c echo.Context) *model.User {
 func GetSessionValue(c echo.Context, key string) interface{} {
 	sess, _ := session.Get("session", c)
 	return sess.Values[key]
+}
+
+func QueryToDataTables(c echo.Context) (dataTableFilters *DataTableFilters) {
+	var sortOrder int64 = 0
+	columnNumber := c.QueryParam("order[0][column]")
+	startFrom, _ := strconv.ParseInt(c.QueryParam("start"), 10, 64)
+	recordCount, _ := strconv.ParseInt(c.QueryParam("length"), 10, 64)
+
+	order := c.QueryParam("order[0][dir]")
+	if order == "asc" {
+		sortOrder = 1
+	} else {
+		sortOrder = -1
+	}
+
+	return &DataTableFilters{
+		Search: c.QueryParam("search[value]"),
+		Offset: startFrom,
+		Limit: recordCount,
+		SortColumnName: c.QueryParam("columns["+columnNumber+"][name]"),
+		SortOrder:  sortOrder,
+	}
 }

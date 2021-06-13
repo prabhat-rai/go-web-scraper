@@ -5,7 +5,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strings"
-	"fmt"
 )
 
 func (h *Handler) FetchReview(c echo.Context) (err error) {
@@ -27,9 +26,37 @@ func (h *Handler) FetchReview(c echo.Context) (err error) {
 
 
 func (h *Handler) RetrieveReviews(c echo.Context) (err error) {
-	appReviews := h.AppReviewRepository.RetrieveBulkReviews()
-	fmt.Printf("%+v", appReviews)
+	var filters = make(map[string]string)
+
+	concept := c.QueryParam("concept")
+	platform := c.QueryParam("platform")
+	rating := c.QueryParam("rating")
+	dataTableFilters := services.QueryToDataTables(c)
+
+	if concept != "" {
+		filters["concept"] = concept
+	}
+
+	if platform != "" {
+		filters["platform"] = platform
+	}
+
+	if rating != "" {
+		filters["rating"] = rating
+	}
+
+	appReviews := h.AppReviewRepository.RetrieveBulkReviews(dataTableFilters, filters)
+	return c.JSON(http.StatusOK, appReviews)
+}
+
+func (h *Handler) ListReviews(c echo.Context) (err error) {
+	userData := services.GetAuthenticatedUser(c)
+
 	return c.Render(http.StatusOK, "reviews.tmpl", map[string]interface{}{
-		"reviews": appReviews.AppReview,
+		"name": userData.Name,
+		"reviews": nil,
+		"concepts": h.Config.AllApps.Apps,
+		"platforms" : []string{"ios", "android"},
+		"ratings" : []int{1,2,3,4,5},
 	})
 }

@@ -24,22 +24,40 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) *handler.Handler {
 		AppReviewRepository: &repositories.AppReviewRepository{
 			DB: database,
 		},
+		KeywordRepository: &repositories.KeywordRepository{
+			DB: database,
+		},
+		KeywordGroupRepository: &repositories.KeywordGroupRepository{
+			DB: database,
+		},
 	}
 
-	// Register Routes
+	// Auth Routes
 	e.GET("/login", h.LoginForm, middlewares.Guest)
 	e.POST("/login", h.Login, middlewares.Guest)
 	e.GET("/register", h.RegisterForm, middlewares.Guest)
 	e.POST("/register", h.Register, middlewares.Guest)
 
+	// Authenticated Routes
 	e.GET("/", h.Home, middlewares.Authenticated)
-	e.GET("/apps", h.AppsList, middlewares.Authenticated)
 	e.GET("/logout", h.Logout, middlewares.Authenticated)
 
+	// Listing Routes
+	e.GET("/apps", h.AppsList, middlewares.Authenticated)
+	e.GET("/reviews", h.ListReviews, middlewares.Authenticated)
+	e.GET("/keywords", h.ListKeywords, middlewares.Authenticated)
+	e.GET("/keyword-groups", h.ListKeywordGroups, middlewares.Authenticated)
+
+	// AJAX listing Routes
+	e.GET("/ajax/reviews-list", h.RetrieveReviews, middlewares.Authenticated)
+	e.GET("/ajax/keywords-list", h.RetrieveKeywords, middlewares.Authenticated)
+	e.GET("/ajax/keyword-groups-list", h.RetrieveKeywordGroups, middlewares.Authenticated)
+
+	// Dev Test Routes
 	e.GET("/dev-test/verify-mongodb-queries", h.VerifyMongoDbQueries, middlewares.Authenticated)
 	e.GET("/dev-test/review", h.FetchReview, middlewares.Authenticated)
-	e.GET("/dev-test/appreviews", h.RetrieveReviews, middlewares.Authenticated)
 
+	// File server
 	e.Static("/static", "public/static")
 
 	fmt.Println("Registering Routes : DONE")

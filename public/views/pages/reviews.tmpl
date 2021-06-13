@@ -15,21 +15,54 @@
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">All Reviews</h6>
+            <div>
+                <h6 class="m-0 font-weight-bold text-primary float-left">All Reviews</h6>
+            </div>
+            <div class="float-right">
+                <select id="conceptSelect" class="ratings-filter" data-filter-on="concept">
+                    <option value="">-Concept-</option>
+                    {{range .concepts}}
+                        <option value="{{.Name}}">{{.Name}}</option>
+                    {{end}}
+                </select>
+
+                <select id="platformSelect" class="ratings-filter" data-filter-on="platform">
+                    <option value="">-Platform-</option>
+                    {{range .platforms}}
+                        <option value="{{.}}">{{.}}</option>
+                    {{end}}
+                </select>
+
+                <select id="ratingSelect" class="ratings-filter" data-filter-on="rating">
+                    <option value="">-Ratings-</option>
+                    {{range .ratings}}
+                        <option value="{{.}}">{{.}}</option>
+                    {{end}}
+                </select>
+
+                <a href="javascript:void(0)" onclick="webScrapperApp.applyReviewFilters()" class="btn btn-primary btn-icon-split btn-sm">
+                    <span class="text">Apply Filters</span>
+                    <span class="icon text-white-50">
+                        <i class="fas fa-check"></i>
+                    </span>
+                </a>
+            </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <table class="table table-bordered data-table-list" id="reviewListDataTable"
+                       data-collapse-data-columns="3"
+                       data-url="/ajax/reviews-list" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>Data</th>
-                            <th>Name</th>
-                            <th>Title</th>
-                            <th>Description</th>
-                            <th>Rating</th>
-                            <th>Concept</th>
-                            <th>Platform</th>
-                            <th>Version</th>
+                            <th data-dt-name="review_date" data-dt-query="review_date" data-col-searchable="0">Date</th>
+                            <th data-dt-name="user_name" data-dt-query="user_name" data-col-sortable="0" data-col-searchable="0">Name</th>
+                            <th data-dt-name="review_title" data-dt-query="review_title" data-col-sortable="0">Title</th>
+                            <th data-dt-name="review_description" data-dt-query="review_description" data-col-sortable="0">Description</th>
+                            <th data-dt-name="rating" data-dt-query="rating" data-col-searchable="0">Rating</th>
+                            <th data-dt-name="concept" data-dt-query="concept" data-col-searchable="0">Concept</th>
+                            <th data-dt-name="platform" data-dt-query="platform" data-col-searchable="0">Platform</th>
+                            <th data-dt-name="version" data-dt-query="version" data-col-searchable="0">Version</th>
                         </tr>
                     </thead>
                     <tfoot>

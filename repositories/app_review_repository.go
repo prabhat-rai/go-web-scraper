@@ -3,40 +3,26 @@ package repositories
 import (
 	"context"
 	"echoApp/model"
+	"echoApp/services"
 	"fmt"
-	"log"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/bson"
+	"log"
 )
 
 type (
 	AppReviewRepository struct {
 		DB *mongo.Database
 	}
+
+	AllReviews struct {
+		Total    int64    `json:"recordsTotal"`
+		Filtered int64    `json:"recordsFiltered"`
+		Data     []model.AppReview `json:"data"`
+	}
 )
-
-
-type AppReviewData struct {
-	
-	ReviewId      	string        		`json:"review_id" bson:"review_id"`
-	ReviewDate  	string        		`json:"review_date" bson:"review_date"`
-	UserName 		string		  		`json:"user_name" bson:"user_name"`
-	Title			string				`json:"review_title" bson:"review_title"`
-	Description  	string        		`json:"review_description" bson:"review_description"`
-	Rating    		string        		`json:"rating" bson:"rating"`
-	CreatedAt 		string				`json:"created_at" bson:"created_at"`
-	UpdatedAt 		string				`json:"updated_at" bson:"updated_at"`
-	Platform 		string				`json:"platform" bson:"platform"`
-	Version 		string				`json:"version" bson:"version"`
-	Concept 		string				`json:"concept" bson:"concept"`
-	Keywords   		[]string      		`json:"keywords" bson:"keywords,omitempty"`
-}
-
-type AllReviews struct {
-	AppReview []model.AppReview `json:"app_reviews"`
-}
-	 
 
 func (appReviewRepo *AppReviewRepository) AddBulkReviews(appReviews []*model.AppReview) (err error) {
 	var insertRecords []interface{}
@@ -58,18 +44,56 @@ func (appReviewRepo *AppReviewRepository) AddBulkReviews(appReviews []*model.App
 	return nil
 }
 
-func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews() (allReviews AllReviews) {
-	findOptions := options.Find()
-	findOptions.SetLimit(2)
-	// var results []*Review
+func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews(dataTableFilters *services.DataTableFilters, filters map[string] string) (allReviews AllReviews) {
+	finalSearchCondition := bson.D{}
 	ctx := context.TODO()
-	review := model.AppReview{}
 	appReviewCollection := appReviewRepo.DB.Collection("app_reviews")
-	findOpts := options.Find().SetProjection(bson.M{"ID": 0}).SetLimit(10)
-	cursor, err := appReviewCollection.Find(ctx, bson.D{}, findOpts)
+
+	var andFilters bson.D
+	var searchFilters bson.D
+
+	for key, value := range filters {
+		andFilters = append(andFilters, bson.E{key, value})
+	}
+
+	if dataTableFilters.Search != "" {
+		searchFilters = append(searchFilters, bson.E{"review_title", primitive.Regex{Pattern: dataTableFilters.Search, Options: ""}})
+		searchFilters = append(searchFilters, bson.E{"review_description", primitive.Regex{Pattern: dataTableFilters.Search, Options: ""}})
+	}
+
+	if len(searchFilters) == 0 {
+		searchFilters = bson.D{}
+	}
+
+	if len(andFilters) == 0 {
+		andFilters = bson.D{}
+	}
+
+	if len(andFilters) > 0 || len(searchFilters) > 0 {
+		finalSearchCondition = bson.D{
+			{ "$and", []interface{}{
+				andFilters,
+				bson.D{{"$or", []interface{}{
+					searchFilters,
+				}}},
+			}},
+		}
+	}
+
+	// Set Find Options
+	findOptions := options.Find().SetLimit(dataTableFilters.Limit)
+	findOptions.SetSort(bson.D{{dataTableFilters.SortColumnName, dataTableFilters.SortOrder}})
+	findOptions.SetSkip(dataTableFilters.Offset)
+
+	count, err := appReviewCollection.CountDocuments(ctx, bson.D{})
+	cursor, err := appReviewCollection.Find(ctx, finalSearchCondition, findOptions)
+	filteredCount, err := appReviewCollection.CountDocuments(ctx, finalSearchCondition)
+
 	if err != nil {
 		return allReviews
 	}
+
+	review := model.AppReview{}
 	for cursor.Next(context.TODO()) {
 		err := cursor.Decode(&review)
 
@@ -77,8 +101,16 @@ func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews() (allReviews AllR
 			log.Fatal(err) 
 		}
 
-		allReviews.AppReview = append(allReviews.AppReview, review)
+		allReviews.Data = append(allReviews.Data, review)
 	}
+
+	allReviews.Total = count
+	allReviews.Filtered = filteredCount
+
+	if allReviews.Data == nil {
+		allReviews.Data = make([]model.AppReview, 0)
+	}
+
 	return allReviews
 	
 }
