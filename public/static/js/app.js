@@ -46,6 +46,10 @@ var webScrapperApp= {
             ? tableObj.attr('data-collapse-data-columns') : false;
         var columnListToCollapse = collapseColumns !== false ? collapseColumns.split(',') : [];
 
+        var statusColumns = tableObj.attr( 'data-status-columns' )
+            ? tableObj.attr('data-status-columns') : false;
+        var columnListForStatus = statusColumns !== false ? statusColumns.split(',') : [];
+
         // Columns array to hold details of datatable columns
         var columns = [];
 
@@ -135,6 +139,16 @@ var webScrapperApp= {
                                     .html(isLess ? "<i class='fas fa-angle-up'></i>" : "<i class='fas fa-angle-down'></i>");
                                 $cell.data("isLess", !isLess);
                             })
+                        }
+                    },
+                    {
+                        targets: columnListForStatus.map(Number),
+                        render: function(cellData) {
+                            if (cellData === true) {
+                                return "<a href='#' class='btn btn-success btn-circle'><i class='fas fa-check'></i></a>";
+                            } else {
+                                return "<a href='#' class='btn btn-danger btn-circle'><i class='fas fa-times'></i></a>";
+                            }
                         }
                     }
                 ]
