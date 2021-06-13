@@ -2,6 +2,7 @@ package handler
 
 import (
 	"echoApp/services"
+	"github.com/dav009/flash"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"strings"
@@ -9,12 +10,20 @@ import (
 
 func (h *Handler) FetchReview(c echo.Context) (err error) {
 	platform := strings.ToLower(c.QueryParam("platform"))
+	words := flash.NewKeywords()
 
 	if platform == "" {
 		platform = "ios"
 	}
 
-	reviews := services.FetchReview(platform, h.Config)
+	dtf := &services.DataTableFilters{}
+	keywords := h.KeywordRepository.RetrieveKeywords(dtf)
+
+	for _, elem := range keywords.Data {
+		words.Add(elem.Name)
+	}
+
+	reviews := services.FetchReview(platform, h.Config, words)
 	err = h.AppReviewRepository.AddBulkReviews(reviews)
 
 	if err != nil {
@@ -27,11 +36,14 @@ func (h *Handler) FetchReview(c echo.Context) (err error) {
 
 func (h *Handler) RetrieveReviews(c echo.Context) (err error) {
 	var filters = make(map[string]string)
+	keywords := []string{}
 
 	concept := c.QueryParam("concept")
 	platform := c.QueryParam("platform")
 	rating := c.QueryParam("rating")
+	keywordGroup := c.QueryParam("keyword_groups")
 	dataTableFilters := services.QueryToDataTables(c)
+
 
 	if concept != "" {
 		filters["concept"] = concept
@@ -45,7 +57,11 @@ func (h *Handler) RetrieveReviews(c echo.Context) (err error) {
 		filters["rating"] = rating
 	}
 
-	appReviews := h.AppReviewRepository.RetrieveBulkReviews(dataTableFilters, filters)
+	if keywordGroup != "" {
+		keywords = h.KeywordGroupRepository.GetKeywordsForGroup(keywordGroup)
+	}
+
+	appReviews := h.AppReviewRepository.RetrieveBulkReviews(dataTableFilters, filters, keywords)
 	return c.JSON(http.StatusOK, appReviews)
 }
 
@@ -58,5 +74,6 @@ func (h *Handler) ListReviews(c echo.Context) (err error) {
 		"concepts": h.Config.AllApps.Apps,
 		"platforms" : []string{"ios", "android"},
 		"ratings" : []int{1,2,3,4,5},
+		"keyword_groups" : []string{"SHUKRAN"},
 	})
 }

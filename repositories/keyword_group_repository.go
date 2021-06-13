@@ -42,8 +42,16 @@ func (keywordGroupRepo *KeywordGroupRepository) RetrieveKeywordGroups(dataTableF
 	}
 
 	// Set Find Options
-	findOptions := options.Find().SetLimit(dataTableFilters.Limit)
-	findOptions.SetSort(bson.D{{dataTableFilters.SortColumnName, dataTableFilters.SortOrder}})
+	findOptions := options.Find()
+
+	if dataTableFilters.Limit != 0 {
+		findOptions.SetLimit(dataTableFilters.Limit)
+	}
+
+	if dataTableFilters.SortColumnName != "" {
+		findOptions.SetSort(bson.D{{dataTableFilters.SortColumnName, dataTableFilters.SortOrder}})
+	}
+
 	findOptions.SetSkip(dataTableFilters.Offset)
 
 	count, err := keywordCollection.CountDocuments(ctx, bson.D{})
@@ -73,4 +81,20 @@ func (keywordGroupRepo *KeywordGroupRepository) RetrieveKeywordGroups(dataTableF
 	}
 
 	return allKeywordGroups
+}
+
+func (keywordGroupRepo *KeywordGroupRepository) GetKeywordsForGroup(groupId string) []string{
+	keywordGroup := model.KeywordGroup{}
+	objectId, _ := primitive.ObjectIDFromHex(groupId)
+	filter := bson.D{{"_id", objectId}}
+	ctx := context.TODO()
+	keywordCollection := keywordGroupRepo.DB.Collection("keyword_groups")
+	err := keywordCollection.FindOne(ctx, filter).Decode(&keywordGroup)
+
+	if err != nil {
+		log.Fatal(err)
+		return make([]string, 0)
+	}
+
+	return keywordGroup.Keywords
 }

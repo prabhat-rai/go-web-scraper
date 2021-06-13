@@ -5,6 +5,7 @@ import (
 	"echoApp/model"
 	"encoding/xml"
 	"fmt"
+	"github.com/dav009/flash"
 	"github.com/n0madic/google-play-scraper/pkg/reviews"
 	"github.com/n0madic/google-play-scraper/pkg/store"
 	"net/http"
@@ -38,38 +39,39 @@ type Author struct {
 	Uri string 			`xml:"uri"`
 }
 
-func FetchReview(platform string, conf *conf.Config) []*model.AppReview {
+func FetchReview(platform string, conf *conf.Config, keywords flash.Keywords) []*model.AppReview {
+
 	if platform == "ios" {
-		return FetchIosReviewsForAllApps(conf.AllApps)
+		return FetchIosReviewsForAllApps(conf.AllApps, keywords)
 	} else {
-		return FetchAndroidReviewsForAllApps(conf.AllApps)
+		return FetchAndroidReviewsForAllApps(conf.AllApps, keywords)
 	}
 
 }
 
-func FetchIosReviewsForAllApps (config conf.AllApps) []*model.AppReview {
+func FetchIosReviewsForAllApps (config conf.AllApps, keywords flash.Keywords) []*model.AppReview {
 	var appReviews []*model.AppReview
 
 	for _, elem := range config.Apps {
-		appReviews = append(appReviews, LoadIosReviews(elem.IosAppId, elem.Name)...)
+		appReviews = append(appReviews, LoadIosReviews(elem.IosAppId, elem.Name, keywords)...)
 	}
 
 	return appReviews
 }
 
-func FetchAndroidReviewsForAllApps(config conf.AllApps) []*model.AppReview {
+func FetchAndroidReviewsForAllApps(config conf.AllApps, keywords flash.Keywords) []*model.AppReview {
 	var appReviews []*model.AppReview
 
 	for _, elem := range config.Apps {
 		fmt.Printf("STARTING : ANDROID Reviews for %s \n\n", elem.Name)
-		appReviews = append(appReviews, LoadAndroidReviews(elem.GoogleAppId, elem.Name)...)
+		appReviews = append(appReviews, LoadAndroidReviews(elem.GoogleAppId, elem.Name, keywords)...)
 		fmt.Printf("DONE : ANDROID Reviews for %s \n\n", elem.Name)
 	}
 
 	return appReviews
 }
 
-func LoadAndroidReviews(id string, appName string) []*model.AppReview {
+func LoadAndroidReviews(id string, appName string, keywords flash.Keywords) []*model.AppReview {
 	r := reviews.New("com.landmarkgroup." + id, reviews.Options{
 		Number: 50,
 		Sorting: store.SortNewest,
@@ -83,6 +85,7 @@ func LoadAndroidReviews(id string, appName string) []*model.AppReview {
 
 	var appReviews []*model.AppReview
 	for _, review := range r.Results {
+		foundKeywords := RemoveDuplicateValues(keywords.Extract(review.Text))
 		appReviews = append(appReviews, &model.AppReview{
 			ReviewId: review.ID,
 			ReviewDate: review.Timestamp.String(),
@@ -95,13 +98,15 @@ func LoadAndroidReviews(id string, appName string) []*model.AppReview {
 			Platform: "android",
 			Version: review.Version,
 			Concept: appName,
+			Keywords: foundKeywords,
 		})
 	}
 
 	return appReviews
 }
 
-func LoadIosReviews(id string, appName string) []*model.AppReview {
+func LoadIosReviews(id string, appName string, keywords flash.Keywords) []*model.AppReview {
+
 	urlPrefix := "https://itunes.apple.com/ae/rss/customerreviews/id="
 	urlSuffix := "/page=1/sortBy=mostRecent/xml"
 	url := urlPrefix + id + urlSuffix
@@ -124,6 +129,7 @@ func LoadIosReviews(id string, appName string) []*model.AppReview {
 
 	var appReviews []*model.AppReview
 	for _, entry := range feed.Entry {
+		foundKeywords := RemoveDuplicateValues(keywords.Extract(entry.Content[0].Data))
 		appReviews = append(appReviews, &model.AppReview{
 			ReviewId: entry.Id,
 			ReviewDate: entry.Updated,
@@ -136,6 +142,7 @@ func LoadIosReviews(id string, appName string) []*model.AppReview {
 			Platform: "ios",
 			Version: entry.Version,
 			Concept: appName,
+			Keywords: foundKeywords,
 		})
 	}
 

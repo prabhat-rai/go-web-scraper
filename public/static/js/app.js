@@ -174,4 +174,41 @@ $( document ).ready( function () {
     if( $( webScrapperApp.tableClassName ).length > 0 ) {
         webScrapperApp.initializeDatatable();
     }
+
+    if( $('.select2-dropdown').length > 0 ) {
+        $('.select2-dropdown').each(function () {
+            let idKey = $(this).attr('data-id-key') || 'id';
+            let textKey = $(this).attr('data-text-key') || 'text';
+
+            $(this).select2({
+                ajax: {
+                    url: $(this).attr('data-url'),
+                    dataType: 'json',
+                    processResults: function (response) {
+                        let result = [{"id" : "", "text" : "-- No Selection --"}];
+
+                        $.each(response.data, function (key, val) {
+                            result.push({"id" : val[idKey], "text" : val[textKey]});
+                        });
+
+                        // Transforms the top-level key of the response object from 'items' to 'results'
+                        return {
+                            results: result
+                        };
+                    },
+                    data: function (params) {
+                        var query = {
+                            "search[value]" : params.term,
+                            "active": 1,
+                            "length" : 5,
+                        };
+
+                        // Query parameters will be ?search=[term]&type=public
+                        return query;
+                    },
+
+                }
+            });
+        })
+    }
 });

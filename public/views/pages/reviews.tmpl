@@ -3,6 +3,7 @@
 {{define "header_js_css"}}
     <!-- Custom styles for this page -->
     <link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 {{end}}
 
 
@@ -18,7 +19,7 @@
             <div>
                 <h6 class="m-0 font-weight-bold text-primary float-left">All Reviews</h6>
             </div>
-            <div class="float-right">
+            <div id="reviewFiltersSection" class="float-right">
                 <select id="conceptSelect" class="ratings-filter" data-filter-on="concept">
                     <option value="">-Concept-</option>
                     {{range .concepts}}
@@ -36,6 +37,14 @@
                 <select id="ratingSelect" class="ratings-filter" data-filter-on="rating">
                     <option value="">-Ratings-</option>
                     {{range .ratings}}
+                        <option value="{{.}}">{{.}}</option>
+                    {{end}}
+                </select>
+
+                <select id="keywordGroupSelect" class="ratings-filter select2-dropdown" data-filter-on="keyword_groups"
+                        data-url="/ajax/keyword-groups-list" data-text-key="group_name" style="width: 200px; height: 33px">
+                    <option value="">-Group-</option>
+                    {{range .keyword_groups}}
                         <option value="{{.}}">{{.}}</option>
                     {{end}}
                 </select>
@@ -103,4 +112,5 @@
     <!-- Page level plugins -->
     <script src="/static/vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="/static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 {{end}}

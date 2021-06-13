@@ -3,6 +3,7 @@ module echoApp
 go 1.16
 
 require (
+	github.com/dav009/flash v0.0.0-20171215081313-a4f0c2e0fc62 // indirect
 	github.com/google/go-cmp v0.5.5 // indirect
 	github.com/gorilla/sessions v1.2.1
 	github.com/joho/godotenv v1.3.0 // indirect

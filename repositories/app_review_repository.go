@@ -27,12 +27,12 @@ type (
 func (appReviewRepo *AppReviewRepository) AddBulkReviews(appReviews []*model.AppReview) (err error) {
 	var insertRecords []interface{}
 	for _, elem := range appReviews {
+		fmt.Printf("%+v", elem.Keywords)
 		insertRecords = append(insertRecords, elem)
 	}
 
 	appReviewCollection := appReviewRepo.DB.Collection("app_reviews")
 	dbContext := context.TODO()
-	//insertRecords := []interface{}{appReviews}
 	result, err := appReviewCollection.InsertMany(dbContext, insertRecords)
 
 	if err != nil {
@@ -44,16 +44,21 @@ func (appReviewRepo *AppReviewRepository) AddBulkReviews(appReviews []*model.App
 	return nil
 }
 
-func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews(dataTableFilters *services.DataTableFilters, filters map[string] string) (allReviews AllReviews) {
+func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews(dataTableFilters *services.DataTableFilters, filters map[string] string, keywords []string) (allReviews AllReviews) {
 	finalSearchCondition := bson.D{}
 	ctx := context.TODO()
 	appReviewCollection := appReviewRepo.DB.Collection("app_reviews")
 
 	var andFilters bson.D
 	var searchFilters bson.D
+	var keywordFilters bson.M
 
 	for key, value := range filters {
 		andFilters = append(andFilters, bson.E{key, value})
+	}
+
+	if len(keywords) > 0 {
+		keywordFilters = bson.M{"keywords": bson.M{"$in": keywords}}
 	}
 
 	if dataTableFilters.Search != "" {
@@ -69,9 +74,16 @@ func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews(dataTableFilters *
 		andFilters = bson.D{}
 	}
 
+	if len(keywordFilters) == 0 {
+		keywordFilters = bson.M{}
+	}
+
+	fmt.Printf("%+v", keywordFilters)
+
 	if len(andFilters) > 0 || len(searchFilters) > 0 {
 		finalSearchCondition = bson.D{
 			{ "$and", []interface{}{
+				keywordFilters,
 				andFilters,
 				bson.D{{"$or", []interface{}{
 					searchFilters,
