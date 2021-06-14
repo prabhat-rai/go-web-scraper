@@ -23,22 +23,40 @@ type (
 	}
 )
 
-func (keywordGroupRepo *KeywordGroupRepository) RetrieveKeywordGroups(dataTableFilters *services.DataTableFilters, userData *model.User) (allKeywordGroups AllKeywordGroups) {
+func (keywordGroupRepo *KeywordGroupRepository) RetrieveKeywordGroups(dataTableFilters *services.DataTableFilters, userData *model.User, activeRecords string) (allKeywordGroups AllKeywordGroups) {
 	finalSearchCondition := bson.D{}
 	ctx := context.TODO()
 	keywordCollection := keywordGroupRepo.DB.Collection("keyword_groups")
 
 	var searchFilters bson.D
+	var andFilters bson.D
 
 	if dataTableFilters.Search != "" {
 		searchFilters = append(searchFilters, bson.E{"group_name", primitive.Regex{Pattern: dataTableFilters.Search, Options: ""}})
 		//searchFilters = append(searchFilters, bson.E{"keywords", bson.M{"$in": dataTableFilters.Search}})
 	}
 
-	if len(searchFilters) > 0 {
-		finalSearchCondition = bson.D{{"$or", []interface{}{
-			searchFilters,
-		}}}
+	if activeRecords == "1" {
+		andFilters = append(andFilters, bson.E{"active", true})
+	}
+
+	if len(andFilters) == 0 {
+		andFilters = bson.D{}
+	}
+
+	if len(searchFilters) == 0 {
+		searchFilters = bson.D{}
+	}
+
+	if len(andFilters) > 0 || len(searchFilters) > 0 {
+		finalSearchCondition = bson.D{
+			{ "$and", []interface{}{
+				andFilters,
+				bson.D{{"$or", []interface{}{
+					searchFilters,
+				}}},
+			}},
+		}
 	}
 
 	// Set Find Options

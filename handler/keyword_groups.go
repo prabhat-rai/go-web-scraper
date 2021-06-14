@@ -16,9 +16,10 @@ func (h *Handler) ListKeywordGroups(c echo.Context) (err error) {
 
 func (h *Handler) RetrieveKeywordGroups(c echo.Context) (err error) {
 	dataTableFilters := services.QueryToDataTables(c)
+	activeRecords := c.QueryParam("active")
 
 	userData := services.GetAuthenticatedUser(c)
-	keywordGroups := h.KeywordGroupRepository.RetrieveKeywordGroups(dataTableFilters, userData)
+	keywordGroups := h.KeywordGroupRepository.RetrieveKeywordGroups(dataTableFilters, userData, activeRecords)
 	return c.JSON(http.StatusOK, keywordGroups)
 }
 

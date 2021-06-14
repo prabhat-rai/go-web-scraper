@@ -4,7 +4,6 @@ import (
 	"context"
 	"echoApp/model"
 	"echoApp/services"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -27,7 +26,6 @@ type (
 func (appReviewRepo *AppReviewRepository) AddBulkReviews(appReviews []*model.AppReview) (err error) {
 	var insertRecords []interface{}
 	for _, elem := range appReviews {
-		fmt.Printf("%+v", elem.Keywords)
 		insertRecords = append(insertRecords, elem)
 	}
 
@@ -36,11 +34,11 @@ func (appReviewRepo *AppReviewRepository) AddBulkReviews(appReviews []*model.App
 	result, err := appReviewCollection.InsertMany(dbContext, insertRecords)
 
 	if err != nil {
-		fmt.Printf("%v", err)
+		log.Fatal(err)
 		return err
 	}
 
-	fmt.Println("Inserted Docs: ", result.InsertedIDs)
+	log.Println("Inserted Docs: ", result.InsertedIDs)
 	return nil
 }
 
@@ -77,8 +75,6 @@ func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews(dataTableFilters *
 	if len(keywordFilters) == 0 {
 		keywordFilters = bson.M{}
 	}
-
-	fmt.Printf("%+v", keywordFilters)
 
 	if len(andFilters) > 0 || len(searchFilters) > 0 {
 		finalSearchCondition = bson.D{
