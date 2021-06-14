@@ -49,9 +49,12 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) *handler.Handler {
 	e.GET("/keyword-groups", h.ListKeywordGroups, middlewares.Authenticated)
 
 	// AJAX listing Routes
-	e.GET("/ajax/reviews-list", h.RetrieveReviews, middlewares.Authenticated)
-	e.GET("/ajax/keywords-list", h.RetrieveKeywords, middlewares.Authenticated)
-	e.GET("/ajax/keyword-groups-list", h.RetrieveKeywordGroups, middlewares.Authenticated)
+	e.GET("/ajax/reviews/list", h.RetrieveReviews, middlewares.Authenticated)
+	e.GET("/ajax/keywords/list", h.RetrieveKeywords, middlewares.Authenticated)
+	e.GET("/ajax/keyword-groups/list", h.RetrieveKeywordGroups, middlewares.Authenticated)
+
+
+	e.POST("/ajax/keyword-groups/change-subscription", h.ChangeSubscriptionToKeywordGroup, middlewares.Authenticated)
 
 	// Dev Test Routes
 	e.GET("/dev-test/verify-mongodb-queries", h.VerifyMongoDbQueries, middlewares.Authenticated)

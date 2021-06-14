@@ -23,7 +23,7 @@ type (
 	}
 )
 
-func (keywordGroupRepo *KeywordGroupRepository) RetrieveKeywordGroups(dataTableFilters *services.DataTableFilters) (allKeywordGroups AllKeywordGroups) {
+func (keywordGroupRepo *KeywordGroupRepository) RetrieveKeywordGroups(dataTableFilters *services.DataTableFilters, userData *model.User) (allKeywordGroups AllKeywordGroups) {
 	finalSearchCondition := bson.D{}
 	ctx := context.TODO()
 	keywordCollection := keywordGroupRepo.DB.Collection("keyword_groups")
@@ -70,6 +70,19 @@ func (keywordGroupRepo *KeywordGroupRepository) RetrieveKeywordGroups(dataTableF
 			log.Fatal(err)
 		}
 
+		if services.InArray(userData.Email, keywordGroup.Subscribers) == true {
+			keywordGroup.SubscribeAction = "<a href='javascript:void(0)' " +
+				"class='btn btn-danger btn-icon-split btn-sm' " +
+				"onclick='webScrapperApp.changeKeyGroupSubscription(\""+ keywordGroup.ID.Hex() +"\", 0)'>" +
+				"<span class='text'>Unsubscribe</span> " +
+				"<span class='icon text-white-50'><i class='fas fa-times'></i> </span> </a>"
+		} else {
+			keywordGroup.SubscribeAction = "<a href='javascript:void(0)' class='btn btn-primary btn-icon-split btn-sm'" +
+				"onclick='webScrapperApp.changeKeyGroupSubscription(\""+ keywordGroup.ID.Hex() +"\", 1)'>" +
+				"<span class='text'>Subscribe</span> " +
+				"<span class='icon text-white-50'><i class='fas fa-rss'></i> </span> </a>"
+		}
+
 		allKeywordGroups.Data = append(allKeywordGroups.Data, keywordGroup)
 	}
 
@@ -98,3 +111,27 @@ func (keywordGroupRepo *KeywordGroupRepository) GetKeywordsForGroup(groupId stri
 
 	return keywordGroup.Keywords
 }
+
+func (keywordGroupRepo *KeywordGroupRepository) UpdateSubscriptionForUser(keyGroupId string, subscriptionStatus string, userEmail string) int64{
+	objectId, _ := primitive.ObjectIDFromHex(keyGroupId)
+	filter := bson.D{{"_id", objectId}}
+	ctx := context.TODO()
+	keywordCollection := keywordGroupRepo.DB.Collection("keyword_groups")
+
+	operation := "$push"
+
+	if subscriptionStatus == "0" {
+		operation = "$pull"
+	}
+
+	updateData := bson.M{operation: bson.M{"subscribers": userEmail}}
+
+	_, err := keywordCollection.UpdateOne(ctx, filter, updateData)
+	if err != nil {
+		log.Fatal(err)
+		return 0
+	}
+
+	return 1
+}
+

@@ -49,14 +49,14 @@ func GetTemplateCache() map[string]*template.Template {
 
 		if name == "login.tmpl" || name == "register.tmpl" {
 			templateCache[name] = template.Must(
-				template.ParseFiles(
+				template.New(name).Funcs(functions).ParseFiles(
 					page,
 					"public/views/layouts/auth.tmpl",
 				),
 			)
 		} else {
 			templateCache[name] = template.Must(
-				template.ParseFiles(
+				template.New(name).Funcs(functions).ParseFiles(
 					page,
 					"public/views/layouts/app.tmpl",
 					"public/views/modules/header.tmpl",

@@ -167,6 +167,28 @@ var webScrapperApp= {
         this.additionalDataTableFilters = filters;
 
         $(this.tableClassName).DataTable().ajax.reload();
+    },
+
+    changeKeyGroupSubscription : function (keyGroupId, subscriptionStatus) {
+        let subscriptionText = (subscriptionStatus === 1 ? "Subscribe" : "Unsubscribe");
+        bootbox.confirm("Are you sure that you want to " + subscriptionText + "?", function (result) {
+            if(result) {
+                $.ajax({
+                    url: "/ajax/keyword-groups/change-subscription",
+                    dataType: 'json',
+                    method : 'POST',
+                    data : 'subscription=' + subscriptionStatus + "&id=" + keyGroupId,
+                    success: function( response ) {
+                        if ( response !== 0 ) {
+                            $(webScrapperApp.tableClassName).DataTable().ajax.reload();
+                            utility.showNotification(subscriptionText + 'd', 'text-success', 5, 'alert-info');
+                        } else {
+                            utility.showNotification( 'Something went wrong.', 'text-danger', 5, 'alert-warning' );
+                        }
+                    }
+                });
+            }
+        });
     }
 };
 
