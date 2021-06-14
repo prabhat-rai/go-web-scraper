@@ -4,7 +4,6 @@ import (
 	"echoApp/conf"
 	"echoApp/model"
 	"echoApp/services"
-	"fmt"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
@@ -20,7 +19,6 @@ func (h *Handler) Home(c echo.Context) (err error) {
 func (h *Handler) AppsList(c echo.Context) (err error) {
 	userData := services.GetAuthenticatedUser(c)
 	appDetails := conf.GetAppsConfig(h.DB, false)
-	fmt.Printf("%+v", appDetails)
 	return c.Render(http.StatusOK, "apps_list.tmpl", map[string]interface{}{
 		"name": userData.Name,
 		"apps": appDetails.Apps,
@@ -53,7 +51,6 @@ func (h *Handler) Login(c echo.Context) error {
 		return nil
 	}
 
-	fmt.Printf("User authenticated %s",user.Email)
 	services.SetSessionValue(c, "authenticated", true)
 	services.SetSessionValue(c, "userName", user.Name)
 	services.SetSessionValue(c, "userEmail", user.Email)
@@ -84,8 +81,6 @@ func (h *Handler) Register(c echo.Context) (err error) {
 		Phone: c.FormValue("phone"),
 	}
 
-	fmt.Printf("%+v\n", user)
-	//fmt.Printf("%v", c.FormValue("name"))
 	err = c.Bind(user)
 	if err != nil {
 		//place holder to render register page with error message
@@ -94,7 +89,6 @@ func (h *Handler) Register(c echo.Context) (err error) {
 		})
 	}
 
-	fmt.Printf("%+v\n", user)
 	err = h.UserRepository.CreateUser(user)
 	if err != nil {
 		return c.Render(http.StatusOK, "register.tmpl", map[string]interface{}{

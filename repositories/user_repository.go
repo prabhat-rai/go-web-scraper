@@ -3,10 +3,10 @@ package repositories
 import (
 	"context"
 	"echoApp/model"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 )
 
 type (
@@ -23,11 +23,11 @@ func (userRepo *UserRepository) CreateUser(u *model.User) (err error) {
 	dbContext := context.TODO()
 	result, err := userCollection.InsertOne(dbContext, u)
 	if err != nil {
-		fmt.Printf("%v", err)
+		log.Fatal(err)
 		return err
 	}
 
-	fmt.Println("Inserted Docs: ", result.InsertedID)
+	log.Println("Inserted Docs: ", result.InsertedID)
 	return nil
 }
 

@@ -42,8 +42,16 @@ func (keywordRepo *KeywordRepository) RetrieveKeywords(dataTableFilters *service
 	}
 
 	// Set Find Options
-	findOptions := options.Find().SetLimit(dataTableFilters.Limit)
-	findOptions.SetSort(bson.D{{dataTableFilters.SortColumnName, dataTableFilters.SortOrder}})
+	findOptions := options.Find()
+
+	if dataTableFilters.Limit != 0 {
+		findOptions.SetLimit(dataTableFilters.Limit)
+	}
+
+	if dataTableFilters.SortColumnName != "" {
+		findOptions.SetSort(bson.D{{dataTableFilters.SortColumnName, dataTableFilters.SortOrder}})
+	}
+
 	findOptions.SetSkip(dataTableFilters.Offset)
 
 	count, err := keywordCollection.CountDocuments(ctx, bson.D{})

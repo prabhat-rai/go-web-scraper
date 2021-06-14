@@ -16,6 +16,6 @@ type (
 		Platform 		string				`json:"platform" bson:"platform"`
 		Version 		string				`json:"version" bson:"version"`
 		Concept 		string				`json:"concept" bson:"concept"`
-		Keywords   		[]string      		`json:"keywords" bson:"keywords,omitempty"`
+		Keywords   		[]string      		`json:"keywords" bson:"keywords"`
 	}
 )

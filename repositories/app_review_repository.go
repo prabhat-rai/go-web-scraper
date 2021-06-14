@@ -4,7 +4,6 @@ import (
 	"context"
 	"echoApp/model"
 	"echoApp/services"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -32,28 +31,32 @@ func (appReviewRepo *AppReviewRepository) AddBulkReviews(appReviews []*model.App
 
 	appReviewCollection := appReviewRepo.DB.Collection("app_reviews")
 	dbContext := context.TODO()
-	//insertRecords := []interface{}{appReviews}
 	result, err := appReviewCollection.InsertMany(dbContext, insertRecords)
 
 	if err != nil {
-		fmt.Printf("%v", err)
+		log.Fatal(err)
 		return err
 	}
 
-	fmt.Println("Inserted Docs: ", result.InsertedIDs)
+	log.Println("Inserted Docs: ", result.InsertedIDs)
 	return nil
 }
 
-func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews(dataTableFilters *services.DataTableFilters, filters map[string] string) (allReviews AllReviews) {
+func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews(dataTableFilters *services.DataTableFilters, filters map[string] string, keywords []string) (allReviews AllReviews) {
 	finalSearchCondition := bson.D{}
 	ctx := context.TODO()
 	appReviewCollection := appReviewRepo.DB.Collection("app_reviews")
 
 	var andFilters bson.D
 	var searchFilters bson.D
+	var keywordFilters bson.M
 
 	for key, value := range filters {
 		andFilters = append(andFilters, bson.E{key, value})
+	}
+
+	if len(keywords) > 0 {
+		keywordFilters = bson.M{"keywords": bson.M{"$in": keywords}}
 	}
 
 	if dataTableFilters.Search != "" {
@@ -69,9 +72,14 @@ func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews(dataTableFilters *
 		andFilters = bson.D{}
 	}
 
+	if len(keywordFilters) == 0 {
+		keywordFilters = bson.M{}
+	}
+
 	if len(andFilters) > 0 || len(searchFilters) > 0 {
 		finalSearchCondition = bson.D{
 			{ "$and", []interface{}{
+				keywordFilters,
 				andFilters,
 				bson.D{{"$or", []interface{}{
 					searchFilters,

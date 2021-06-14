@@ -84,3 +84,25 @@ func QueryToDataTables(c echo.Context) (dataTableFilters *DataTableFilters) {
 		SortOrder:  sortOrder,
 	}
 }
+
+func RemoveDuplicateValues(stringSlice []string) []string {
+	keys := make(map[string]bool)
+	var list []string
+
+	for _, entry := range stringSlice {
+		if _, value := keys[entry]; !value {
+			keys[entry] = true
+			list = append(list, entry)
+		}
+	}
+	return list
+}
+
+func InArray(key string, haystack []string) bool {
+	for _, value := range haystack {
+		if value == key {
+			return true
+		}
+	}
+	return false
+}

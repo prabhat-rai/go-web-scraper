@@ -167,11 +167,70 @@ var webScrapperApp= {
         this.additionalDataTableFilters = filters;
 
         $(this.tableClassName).DataTable().ajax.reload();
+    },
+
+    changeKeyGroupSubscription : function (keyGroupId, subscriptionStatus) {
+        let subscriptionText = (subscriptionStatus === 1 ? "Subscribe" : "Unsubscribe");
+        bootbox.confirm("Are you sure that you want to " + subscriptionText + "?", function (result) {
+            if(result) {
+                $.ajax({
+                    url: "/ajax/keyword-groups/change-subscription",
+                    dataType: 'json',
+                    method : 'POST',
+                    data : 'subscription=' + subscriptionStatus + "&id=" + keyGroupId,
+                    success: function( response ) {
+                        if ( response !== 0 ) {
+                            $(webScrapperApp.tableClassName).DataTable().ajax.reload();
+                            utility.showNotification(subscriptionText + 'd', 'text-success', 5, 'alert-info');
+                        } else {
+                            utility.showNotification( 'Something went wrong.', 'text-danger', 5, 'alert-warning' );
+                        }
+                    }
+                });
+            }
+        });
     }
 };
 
 $( document ).ready( function () {
     if( $( webScrapperApp.tableClassName ).length > 0 ) {
         webScrapperApp.initializeDatatable();
+    }
+
+    if( $('.select2-dropdown').length > 0 ) {
+        $('.select2-dropdown').each(function () {
+            let idKey = $(this).attr('data-id-key') || 'id';
+            let textKey = $(this).attr('data-text-key') || 'text';
+
+            $(this).select2({
+                ajax: {
+                    url: $(this).attr('data-url'),
+                    dataType: 'json',
+                    processResults: function (response) {
+                        let result = [{"id" : "", "text" : "-- No Selection --"}];
+
+                        $.each(response.data, function (key, val) {
+                            result.push({"id" : val[idKey], "text" : val[textKey]});
+                        });
+
+                        // Transforms the top-level key of the response object from 'items' to 'results'
+                        return {
+                            results: result
+                        };
+                    },
+                    data: function (params) {
+                        var query = {
+                            "search[value]" : params.term,
+                            "active": 1,
+                            "length" : 5,
+                        };
+
+                        // Query parameters will be ?search=[term]&type=public
+                        return query;
+                    },
+
+                }
+            });
+        })
     }
 });

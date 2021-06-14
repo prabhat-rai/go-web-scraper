@@ -22,12 +22,13 @@
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered data-table-list" id="reviewListDataTable" data-status-columns="2"
-                       data-url="/ajax/keyword-groups-list" width="100%" cellspacing="0">
+                       data-url="/ajax/keyword-groups/list" width="100%" cellspacing="0">
                     <thead>
                         <tr>
                             <th data-dt-name="group_name" data-dt-query="group_name">Name</th>
                             <th data-dt-name="keywords" data-dt-query="keywords" data-col-sortable="0">Keywords</th>
                             <th data-dt-name="active" data-dt-query="active" data-col-searchable="0">Active ?</th>
+                            <th data-dt-name="subscribe_action" data-dt-query="subscribe_action" data-col-sortable="0" data-col-searchable="0">Subscribe</th>
                         </tr>
                     </thead>
                     <tfoot>
@@ -35,6 +36,7 @@
                             <th>Name</th>
                             <th>Keywords</th>
                             <th>Active ?</th>
+                            <th>Subscribe</th>
                         </tr>
                     </tfoot>
                     <tbody>
