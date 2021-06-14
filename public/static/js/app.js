@@ -189,6 +189,22 @@ var webScrapperApp= {
                 });
             }
         });
+    },
+
+    fetchReviews : function (concept, fetchForPlatform) {
+        $.ajax({
+            url: '/ajax/reviews/fetch?concept=' + concept + '&platform=' + fetchForPlatform,
+            dataType: 'json',
+            method : 'GET',
+            success: function( response ) {
+                if ( response !== 0 ) {
+                    let successMsg = 'We are fetching latest reviews of ' + concept + ' from ' + fetchForPlatform + ' platform';
+                    utility.showNotification(successMsg, 'text-success', 5, 'alert-info');
+                } else {
+                    utility.showNotification( 'Something went wrong.', 'text-danger', 5, 'alert-warning' );
+                }
+            }
+        });
     }
 };
 

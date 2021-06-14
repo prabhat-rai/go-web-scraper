@@ -55,6 +55,7 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) *handler.Handler {
 
 
 	e.POST("/ajax/keyword-groups/change-subscription", h.ChangeSubscriptionToKeywordGroup, middlewares.Authenticated)
+	e.GET("/ajax/reviews/fetch", h.FetchReview, middlewares.Authenticated)
 
 	// Dev Test Routes
 	e.GET("/dev-test/verify-mongodb-queries", h.VerifyMongoDbQueries, middlewares.Authenticated)

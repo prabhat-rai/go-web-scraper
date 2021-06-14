@@ -122,3 +122,20 @@ func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews(dataTableFilters *
 	return allReviews
 	
 }
+
+func (appReviewRepo *AppReviewRepository) GetLatestReviewId(platform string, concept string) string {
+	ctx := context.TODO()
+	appReviewCollection := appReviewRepo.DB.Collection("app_reviews")
+	review := model.AppReview{}
+
+	filter := bson.D{{"platform", platform}, {"concept", concept}}
+
+	opts := options.FindOne().SetSort(bson.D{{"review_date", -1}})
+	err := appReviewCollection.FindOne(ctx, filter, opts).Decode(&review)
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+
+	return review.ReviewId
+}
