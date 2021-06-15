@@ -115,20 +115,9 @@ func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews(dataTableFilters *
 	return allReviews
 	
 }
-func (appReviewRepo *AppReviewRepository) CountReviews(collection string, groupbyattr string) []bson.M {
-	reviewCollection := appReviewRepo.DB.Collection(collection)
-	dbContext := context.TODO()
-	groupStage := bson.D{{"$group", bson.D{{"_id", groupbyattr}, {"count", bson.D{{"$sum", 1}}}}}}
 
-	cur,err := reviewCollection.Aggregate(dbContext,mongo.Pipeline{groupStage})
-	var showsWithInfo []bson.M
-	if err = cur.All(dbContext, &showsWithInfo); err != nil {
-		panic(err)
-	}
-	return showsWithInfo
-}
 //group by count
-func (appReviewRepo *AppReviewRepository) CountReviews1(collection string, groupbyattr string, days int) []bson.M {
+func (appReviewRepo *AppReviewRepository) CountReviews(collection string, groupbyattr string, days int) []bson.M {
 	reviewCollection := appReviewRepo.DB.Collection(collection)
 	dbContext := context.TODO()
 	workingTime := time.Now().AddDate(0,0,-days)
