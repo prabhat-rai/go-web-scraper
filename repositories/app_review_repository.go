@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"time"
 )
 
 type (
@@ -121,4 +122,23 @@ func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews(dataTableFilters *
 
 	return allReviews
 	
+}
+
+//group by count
+func (appReviewRepo *AppReviewRepository) CountReviews(collection string, groupbyattr string, days int) []bson.M {
+	reviewCollection := appReviewRepo.DB.Collection(collection)
+	dbContext := context.TODO()
+	workingTime := time.Now().AddDate(0,0,-days)
+	matchStage := bson.D{{"$match", bson.D{{"review_date", bson.D{{"$gt",workingTime.String()}}}}}}
+	groupStage := bson.D{{"$group", bson.D{{"_id", groupbyattr}, {"count", bson.D{{"$sum", 1}}}}}}
+	cur,err := reviewCollection.Aggregate(dbContext,mongo.Pipeline{matchStage,groupStage})
+	var showsWithInfo []bson.M
+	if cur == nil {
+		fmt.Println("cursor nil")
+		return showsWithInfo
+	}
+	if err = cur.All(dbContext, &showsWithInfo); err != nil {
+		panic(err)
+	}
+	return showsWithInfo
 }
