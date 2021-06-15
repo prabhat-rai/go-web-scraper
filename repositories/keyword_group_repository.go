@@ -153,3 +153,34 @@ func (keywordGroupRepo *KeywordGroupRepository) UpdateSubscriptionForUser(keyGro
 	return 1
 }
 
+
+func (keywordGroupRepo *KeywordGroupRepository) GetGroupsWithActiveSubscribers() (allKeywordGroups []model.KeywordGroup) {
+	keywordCollection := keywordGroupRepo.DB.Collection("keyword_groups")
+	ctx := context.TODO()
+
+	filter := bson.D{{"$or", []interface{}{
+		bson.D{{"subscribers.0", bson.M{"$exists": true}}},
+	}}}
+
+	findOptions := options.Find()
+	cursor, err := keywordCollection.Find(ctx, filter, findOptions)
+
+	keywordGroup := model.KeywordGroup{}
+	for cursor.Next(context.TODO()) {
+		err := cursor.Decode(&keywordGroup)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		allKeywordGroups = append(allKeywordGroups, keywordGroup)
+	}
+
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	return allKeywordGroups
+}

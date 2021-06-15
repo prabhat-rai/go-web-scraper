@@ -23,7 +23,7 @@ type (
 	}
 )
 
-func (appReviewRepo *AppReviewRepository) AddBulkReviews(appReviews []*model.AppReview) (err error) {
+func (appReviewRepo *AppReviewRepository) AddBulkReviews(appReviews []*model.AppReview) (insertedIds interface {}, err error) {
 	var insertRecords []interface{}
 	for _, elem := range appReviews {
 		insertRecords = append(insertRecords, elem)
@@ -35,11 +35,10 @@ func (appReviewRepo *AppReviewRepository) AddBulkReviews(appReviews []*model.App
 
 	if err != nil {
 		log.Fatal(err)
-		return err
+		return nil, err
 	}
 
-	log.Println("Inserted Docs: ", result.InsertedIDs)
-	return nil
+	return result.InsertedIDs, nil
 }
 
 func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews(dataTableFilters *services.DataTableFilters, filters map[string] string, keywords []string) (allReviews AllReviews) {
@@ -138,4 +137,54 @@ func (appReviewRepo *AppReviewRepository) GetLatestReviewId(platform string, con
 	}
 
 	return review.ReviewId
+}
+
+func (appReviewRepo *AppReviewRepository) GetReviewsWithMatchingKeywords(keywords []string, objectIds interface{}) (allReviews []model.AppReview) {
+	finalSearchCondition := bson.D{}
+	var andFilters bson.M
+	//var searchFilters bson.D
+	var keywordFilters bson.M
+
+	if len(keywords) > 0 {
+		keywordFilters = bson.M{"keywords": bson.M{"$in": keywords}}
+	}
+
+	if objectIds != nil {
+		andFilters = bson.M{"_id": bson.M{"$in": objectIds}}
+	}
+
+	ctx := context.TODO()
+	appReviewCollection := appReviewRepo.DB.Collection("app_reviews")
+
+	// Set Find Options
+	findOptions := options.Find()
+
+	finalSearchCondition = bson.D{
+		{ "$and", []interface{}{
+			keywordFilters,
+			andFilters,
+			//bson.D{{"$or", []interface{}{
+			//	searchFilters,
+			//}}},
+		}},
+	}
+
+	cursor, err := appReviewCollection.Find(ctx, finalSearchCondition, findOptions)
+
+	if err != nil {
+		return allReviews
+	}
+
+	review := model.AppReview{}
+	for cursor.Next(context.TODO()) {
+		err := cursor.Decode(&review)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		allReviews = append(allReviews, review)
+	}
+
+	return allReviews
 }

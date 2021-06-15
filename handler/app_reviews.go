@@ -57,17 +57,41 @@ func (h *Handler) fetchReviewForApp(concept string, platform string, config conf
 	}
 
 	if len(reviews) > 0 {
-		err := h.AppReviewRepository.AddBulkReviews(reviews)
+		insertedIDs, err := h.AppReviewRepository.AddBulkReviews(reviews)
 
 		if err != nil {
 			log.Println(err)
 			return false
 		}
+
+		h.TriggerMailToSubscribers(insertedIDs)
 	}
 
 
 	return true
 }
+
+func (h *Handler) TriggerMailToSubscribers(insertedIDs interface{}) {
+	//log.Println("Inserted Docs: ", insertedIDs)
+
+
+	// Get All KeywordGroups where subscriber is not empty
+	keywordGroups := h.KeywordGroupRepository.GetGroupsWithActiveSubscribers()
+
+	// Loop through the fetched groups and run query with Keyword present in group + inserted Id in the reviews collection
+	for _, elem := range keywordGroups {
+		//elem.Keywords
+
+		reviews := h.AppReviewRepository.GetReviewsWithMatchingKeywords(elem.Keywords, insertedIDs)
+
+		// If we have reviews send a mail to subscribers.
+		if len(reviews) > 0 {
+			keywordsString := strings.Join(elem.Keywords, ",")
+			go services.SendMailForNewReviews(elem.Subscribers, reviews, elem.GroupName, keywordsString)
+		}
+	}
+}
+
 func (h *Handler) RetrieveReviews(c echo.Context) (err error) {
 	var filters = make(map[string]string)
 	keywords := []string{}
