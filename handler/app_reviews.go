@@ -29,11 +29,11 @@ func (h *Handler) FetchReview(c echo.Context) (err error) {
 	}
 
 	if platform == "ios" || platform == "all" {
-		_ = h.fetchReviewForApp(concept, "ios", h.Config.AllApps, words)
+		go h.fetchReviewForApp(concept, "ios", h.Config.AllApps, words)
 	}
 
 	if platform == "android" || platform == "all" {
-		_ = h.fetchReviewForApp(concept, "android", h.Config.AllApps, words)
+		go h.fetchReviewForApp(concept, "android", h.Config.AllApps, words)
 	}
 
 	return c.JSON(http.StatusOK, "All Ok : Fetched reviews for " + platform + " platform.")
