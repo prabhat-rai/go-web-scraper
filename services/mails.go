@@ -11,17 +11,13 @@ import (
 )
 
 func SendMailForNewReviews(recieverEmails []string, reviews []model.AppReview, groupName string, keywords string) {
-	// Sender data.
+	// SMTP server configuration.
 	from := os.Getenv("MAIL_USER")
 	password := os.Getenv("MAIL_PASSWORD")
-
-	// Receiver email address.
-	to := recieverEmails
-
-	// smtp server configuration.
 	smtpHost := os.Getenv("MAIL_HOST")
 	smtpPort := os.Getenv("MAIL_PORT")
 	auth := smtp.PlainAuth("", from, password, smtpHost)
+
 	emailTemplate, errs := template.ParseFiles("public/views/mails/subscribed_reviews.html")
 	if errs != nil {
 		log.Printf("template parse : %v",errs)
@@ -42,7 +38,7 @@ func SendMailForNewReviews(recieverEmails []string, reviews []model.AppReview, g
 	})
 
 	// Sending email.
-	err := smtp.SendMail(smtpHost + ":" + smtpPort, auth, from, to, body.Bytes())
+	err := smtp.SendMail(smtpHost + ":" + smtpPort, auth, from, recieverEmails, body.Bytes())
 	if err != nil {
 		fmt.Println(err)
 		return
