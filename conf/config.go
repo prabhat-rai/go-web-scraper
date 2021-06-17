@@ -8,8 +8,9 @@ import (
 type (
 	Config struct {
 		AllApps AllApps
-		//AndroidApps AllAndroidApps
-		//IosApps AllIosApps
+		AndroidApps AllAndroidApps
+		IosApps AllIosApps
+		AllSchedulerConfigs AllSchedulerConfigs
 	}
 )
 
@@ -20,7 +21,8 @@ func New(client *mongo.Client) *Config {
 
 	return &Config{
 		AllApps: GetAppsConfig(database, true),
-		//AndroidApps: GetAndroidAppsViaConfig(),
-		//IosApps: GetIosAppsViaConfig(),
+		AndroidApps: GetAndroidAppsViaConfig(),
+		IosApps: GetIosAppsViaConfig(),
+		AllSchedulerConfigs:GetSchedulerConfigsViaConfig(),
 	}
 }

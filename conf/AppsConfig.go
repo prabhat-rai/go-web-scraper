@@ -33,6 +33,14 @@ type (
 	AllApps struct {
 		Apps []model.Apps `json:"all_apps"`
 	}
+
+	SchedulerConfigs struct {
+		Concept string `json:"name"`
+		Cronexpression string `json:"cronexpression"`
+	}
+	AllSchedulerConfigs struct {
+		SchedulerConfigs []SchedulerConfigs `json:"schedulers"`
+	}
 )
 
 func GetAppsConfig(db *mongo.Database, onlyActiveRecords bool) AllApps {
@@ -91,4 +99,16 @@ func GetIosAppsViaConfig() AllIosApps {
 	}
 
 	return iosApps
+}
+
+func GetSchedulerConfigsViaConfig() AllSchedulerConfigs {
+	var schedulerConfigs AllSchedulerConfigs
+	schedulerConfigsProp := os.Getenv("SCHEDULER_CONFIGS")
+	err := json.Unmarshal([]byte(schedulerConfigsProp), &schedulerConfigs)
+
+	if err != nil {
+		log.Fatal("COULD NOT INTERPRET CONFIG")
+	}
+
+	return schedulerConfigs
 }
