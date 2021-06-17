@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <p>Hi There,</p><br/>
+
+
+    <p>You are recieving this mail as you are subscribed to <b><i>{{.GroupName}}</i></b></p>
+
+    Please find the recent review with matching keywords of [ {{.Keywords}} ]
+
+    <table width="100%" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Rating</th>
+                <th>Concept</th>
+                <th>Platform</th>
+            </tr>
+        </thead>
+        <tfoot>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Rating</th>
+            <th>Concept</th>
+            <th>Platform</th>
+        </tr>
+        </tfoot>
+        <tbody>
+        {{range .Reviews}}
+            <tr>
+                <td>{{.UserName}}</td>
+                <td>{{.Description}}</td>
+                <td>{{.Rating}}</td>
+                <td>{{.Concept}}</td>
+                <td>{{.Platform}}</td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+
+
+
+    <br><br>
+
+
+    Regards,<br/>
+    LMG Reviews - Powered By GO
+</div>
+</body>
+</html>

@@ -12,6 +12,7 @@ require (
 	github.com/labstack/echo/v4 v4.3.0
 	github.com/labstack/gommon v0.3.0
 	github.com/n0madic/google-play-scraper v0.0.0-20210216085704-d6151374e493
+	github.com/slack-go/slack v0.9.1 // indirect
 	github.com/tidwall/gjson v1.8.0 // indirect
 	go.mongodb.org/mongo-driver v1.5.2
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2

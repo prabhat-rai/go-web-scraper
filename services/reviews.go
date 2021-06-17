@@ -1,13 +1,12 @@
 package services
 
 import (
-	"echoApp/conf"
 	"echoApp/model"
 	"encoding/xml"
-	"fmt"
 	"github.com/dav009/flash"
 	"github.com/n0madic/google-play-scraper/pkg/reviews"
 	"github.com/n0madic/google-play-scraper/pkg/store"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -39,39 +38,7 @@ type Author struct {
 	Uri string 			`xml:"uri"`
 }
 
-func FetchReview(platform string, conf *conf.Config, keywords flash.Keywords) []*model.AppReview {
-
-	if platform == "ios" {
-		return FetchIosReviewsForAllApps(conf.AllApps, keywords)
-	} else {
-		return FetchAndroidReviewsForAllApps(conf.AllApps, keywords)
-	}
-
-}
-
-func FetchIosReviewsForAllApps (config conf.AllApps, keywords flash.Keywords) []*model.AppReview {
-	var appReviews []*model.AppReview
-
-	for _, elem := range config.Apps {
-		appReviews = append(appReviews, LoadIosReviews(elem.IosAppId, elem.Name, keywords)...)
-	}
-
-	return appReviews
-}
-
-func FetchAndroidReviewsForAllApps(config conf.AllApps, keywords flash.Keywords) []*model.AppReview {
-	var appReviews []*model.AppReview
-
-	for _, elem := range config.Apps {
-		fmt.Printf("STARTING : ANDROID Reviews for %s \n\n", elem.Name)
-		appReviews = append(appReviews, LoadAndroidReviews(elem.GoogleAppId, elem.Name, keywords)...)
-		fmt.Printf("DONE : ANDROID Reviews for %s \n\n", elem.Name)
-	}
-
-	return appReviews
-}
-
-func LoadAndroidReviews(id string, appName string, keywords flash.Keywords) []*model.AppReview {
+func LoadAndroidReviews(id string, appName string, keywords flash.Keywords, latestReviewId string) []*model.AppReview {
 	r := reviews.New("com.landmarkgroup." + id, reviews.Options{
 		Number: 50,
 		Sorting: store.SortNewest,
@@ -86,6 +53,11 @@ func LoadAndroidReviews(id string, appName string, keywords flash.Keywords) []*m
 	var appReviews []*model.AppReview
 	for _, review := range r.Results {
 		foundKeywords := RemoveDuplicateValues(keywords.Extract(review.Text))
+
+		if latestReviewId == review.ID {
+			break
+		}
+
 		appReviews = append(appReviews, &model.AppReview{
 			ReviewId: review.ID,
 			ReviewDate: review.Timestamp.String(),
@@ -105,7 +77,7 @@ func LoadAndroidReviews(id string, appName string, keywords flash.Keywords) []*m
 	return appReviews
 }
 
-func LoadIosReviews(id string, appName string, keywords flash.Keywords) []*model.AppReview {
+func LoadIosReviews(id string, appName string, keywords flash.Keywords, latestReviewId string) []*model.AppReview {
 
 	urlPrefix := "https://itunes.apple.com/ae/rss/customerreviews/id="
 	urlSuffix := "/page=1/sortBy=mostRecent/xml"
@@ -113,7 +85,7 @@ func LoadIosReviews(id string, appName string, keywords flash.Keywords) []*model
 
 	resp, err := http.Get(url)
 	if err != nil {
-		fmt.Printf("Error GET: %v\n", err)
+		log.Printf("Error GET: %v\n", err)
 		return nil
 	}
 	defer resp.Body.Close()
@@ -123,13 +95,18 @@ func LoadIosReviews(id string, appName string, keywords flash.Keywords) []*model
 	decoder := xml.NewDecoder(resp.Body)
 	err = decoder.Decode(&feed)
 	if err != nil {
-		fmt.Printf("Error Decode: %v\n", err)
+		log.Printf("Error Decode: %v\n", err)
 		return nil
 	}
 
 	var appReviews []*model.AppReview
 	for _, entry := range feed.Entry {
 		foundKeywords := RemoveDuplicateValues(keywords.Extract(entry.Content[0].Data))
+
+		if latestReviewId == entry.Id {
+			break
+		}
+
 		appReviews = append(appReviews, &model.AppReview{
 			ReviewId: entry.Id,
 			ReviewDate: entry.Updated,

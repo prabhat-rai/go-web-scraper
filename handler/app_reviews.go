@@ -1,19 +1,24 @@
 package handler
 
 import (
+	"echoApp/conf"
+	"echoApp/model"
 	"echoApp/services"
 	"github.com/dav009/flash"
 	"github.com/labstack/echo/v4"
+	"log"
 	"net/http"
 	"strings"
 )
 
 func (h *Handler) FetchReview(c echo.Context) (err error) {
 	platform := strings.ToLower(c.QueryParam("platform"))
+	concept := strings.ToLower(c.QueryParam("concept"))
+
 	words := flash.NewKeywords()
 
 	if platform == "" {
-		platform = "ios"
+		platform = "all"
 	}
 
 	dtf := &services.DataTableFilters{}
@@ -23,16 +28,69 @@ func (h *Handler) FetchReview(c echo.Context) (err error) {
 		words.Add(elem.Name)
 	}
 
-	reviews := services.FetchReview(platform, h.Config, words)
-	err = h.AppReviewRepository.AddBulkReviews(reviews)
-
-	if err != nil {
-		return err
+	if platform == "ios" || platform == "all" {
+		go h.fetchReviewForApp(concept, "ios", h.Config.AllApps, words)
 	}
 
-	return c.JSON(http.StatusOK, "All Ok : Fetched reviews for " + platform + ".")
+	if platform == "android" || platform == "all" {
+		go h.fetchReviewForApp(concept, "android", h.Config.AllApps, words)
+	}
+
+	return c.JSON(http.StatusOK, "All Ok : Fetched reviews for " + platform + " platform.")
 }
 
+func (h *Handler) fetchReviewForApp(concept string, platform string, config conf.AllApps, words flash.Keywords) bool {
+	var reviews []*model.AppReview
+
+	for _, elem := range config.Apps {
+		if concept == "" || concept == elem.Name {
+			latestReviewId := h.AppReviewRepository.GetLatestReviewId(platform, elem.Name)
+			log.Printf("STARTING : %s Reviews for %s \n\n", platform, elem.Name)
+
+			if platform == "ios" {
+				reviews = append(reviews, services.LoadIosReviews(elem.IosAppId, elem.Name, words, latestReviewId)...)
+			} else {
+				reviews = append(reviews, services.LoadAndroidReviews(elem.GoogleAppId, elem.Name, words, latestReviewId)...)
+			}
+			log.Printf("DONE : %s Reviews for %s \n\n", platform, elem.Name)
+		}
+	}
+
+	if len(reviews) > 0 {
+		insertedIDs, err := h.AppReviewRepository.AddBulkReviews(reviews)
+
+		if err != nil {
+			log.Println(err)
+			return false
+		}
+
+		h.TriggerMailToSubscribers(insertedIDs)
+	}
+
+
+	return true
+}
+
+func (h *Handler) TriggerMailToSubscribers(insertedIDs interface{}) {
+	//log.Println("Inserted Docs: ", insertedIDs)
+
+
+	// Get All KeywordGroups where subscriber is not empty
+	keywordGroups := h.KeywordGroupRepository.GetGroupsWithActiveSubscribers()
+
+	// Loop through the fetched groups and run query with Keyword present in group + inserted Id in the reviews collection
+	for _, elem := range keywordGroups {
+		//elem.Keywords
+
+		reviews := h.AppReviewRepository.GetReviewsWithMatchingKeywords(elem.Keywords, insertedIDs)
+
+		// If we have reviews send a mail to subscribers.
+		if len(reviews) > 0 {
+			keywordsString := strings.Join(elem.Keywords, ",")
+			go services.SendMailForNewReviews(elem.Subscribers, reviews, elem.GroupName, keywordsString)
+		}
+	}
+}
 
 func (h *Handler) RetrieveReviews(c echo.Context) (err error) {
 	var filters = make(map[string]string)
