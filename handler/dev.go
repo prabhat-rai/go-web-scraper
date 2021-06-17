@@ -16,7 +16,7 @@ import (
 )
 
 func (h *Handler) SendSlackMessage(c echo.Context) (err error) {
-	api := slack.New("xoxp-373109151536-373109151824-373262424545-9d27123627bf8ced90e9b2122e515594")
+	api := slack.New("SLACK_TOKEN_GOES_HERE")
 	attachment := slack.Attachment{
 		Title: "Error",
 		Fallback: "Queued Jobs are not running for 38 minutes.",
