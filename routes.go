@@ -59,6 +59,7 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) *handler.Handler {
 
 	// Dev Test Routes
 	e.GET("/dev-test/verify-mongodb-queries", h.VerifyMongoDbQueries, middlewares.Authenticated)
+	e.GET("/dev-test/slack", h.SendSlackMessage, middlewares.Authenticated)
 	e.GET("/dev-test/review", h.FetchReview, middlewares.Authenticated)
 
 	// File server

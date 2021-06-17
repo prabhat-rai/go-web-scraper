@@ -6,6 +6,7 @@ import (
 	"echoApp/services"
 	"fmt"
 	"github.com/labstack/echo/v4"
+	"github.com/slack-go/slack"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -13,6 +14,42 @@ import (
 	"log"
 	"net/http"
 )
+
+func (h *Handler) SendSlackMessage(c echo.Context) (err error) {
+	api := slack.New("xoxp-373109151536-373109151824-373262424545-9d27123627bf8ced90e9b2122e515594")
+	attachment := slack.Attachment{
+		Title: "Error",
+		Fallback: "Queued Jobs are not running for 38 minutes.",
+		Text: "Queued Jobs are not running for 38 minutes.",
+		Color: "#FF2323",
+		MarkdownIn: []string{"fields"},
+		Footer: "Powered By GO",
+		FooterIcon: "https://emojis.slackmojis.com/emojis/images/1454546974/291/golang.png",
+		Fields: []slack.AttachmentField{
+			{
+				Title: "",
+				Value: "```kfnjskdsk sj sdjk gskdj gjksd jkgsjk```",
+				Short: false,
+			},
+		},
+	}
+
+	option := slack.MsgOption(
+		slack.MsgOptionAttachments(attachment),
+	)
+
+	userName := slack.MsgOptionUsername("Proxy Service")
+	_channel, _timestamp, _text, err := api.SendMessage("go-fetch", option, userName)
+
+	if err != nil {
+		fmt.Printf("%s\n", err)
+		return
+	}
+
+	fmt.Printf("Sent the message \"%s\" to the channel : %s, on : %s \n", _text, _channel, _timestamp)
+
+	return c.JSON(http.StatusOK, "All Ok.")
+}
 
 func (h *Handler) VerifyMongoDbQueries(c echo.Context) (err error) {
 	userCollection := h.DB.Collection("users")
