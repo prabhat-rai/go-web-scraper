@@ -7,12 +7,10 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/mongo"
-	"os"
 )
 
-func registerRoutes(e *echo.Echo, client *mongo.Client) *handler.Handler {
+func registerRoutes(e *echo.Echo, client *mongo.Client,dbName string) *handler.Handler {
 	// Connect to DB
-	dbName := os.Getenv("DB_DATABASE")
 	database := client.Database(dbName)
 
 	// Initialize handler

@@ -3,12 +3,10 @@ package conf
 import (
 	"context"
 	"echoApp/model"
-	"encoding/json"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"os"
 )
 
 type (
@@ -76,39 +74,3 @@ func GetAppsConfig(db *mongo.Database, onlyActiveRecords bool) AllApps {
 	return allApps
 }
 
-func GetAndroidAppsViaConfig() AllAndroidApps {
-	var androidApps AllAndroidApps
-	androidAppConfigs := os.Getenv("ANDROID_APPS")
-	err := json.Unmarshal([]byte(androidAppConfigs), &androidApps)
-
-	if err != nil {
-		log.Fatal("COULD NOT INTERPRET CONFIG")
-	}
-
-	return androidApps
-}
-
-
-func GetIosAppsViaConfig() AllIosApps {
-	var iosApps AllIosApps
-	iosAppConfigs := os.Getenv("IOS_APPS")
-	err := json.Unmarshal([]byte(iosAppConfigs), &iosApps)
-
-	if err != nil {
-		log.Fatal("COULD NOT INTERPRET CONFIG")
-	}
-
-	return iosApps
-}
-
-func GetSchedulerConfigs() AllSchedulerConfigs {
-	var schedulerConfigs AllSchedulerConfigs
-	schedulerConfigsProp := os.Getenv("SCHEDULER_CONFIGS")
-	err := json.Unmarshal([]byte(schedulerConfigsProp), &schedulerConfigs)
-
-	if err != nil {
-		log.Fatal("COULD NOT INTERPRET CONFIG")
-	}
-
-	return schedulerConfigs
-}
