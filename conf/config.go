@@ -10,6 +10,7 @@ type (
 		AllApps AllApps
 		//AndroidApps AllAndroidApps
 		//IosApps AllIosApps
+		AllSchedulerConfigs AllSchedulerConfigs
 	}
 )
 
@@ -22,5 +23,6 @@ func New(client *mongo.Client) *Config {
 		AllApps: GetAppsConfig(database, true),
 		//AndroidApps: GetAndroidAppsViaConfig(),
 		//IosApps: GetIosAppsViaConfig(),
+		AllSchedulerConfigs:GetSchedulerConfigs(),
 	}
 }

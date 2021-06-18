@@ -15,12 +15,19 @@ func (h *Handler) FetchReview(c echo.Context) (err error) {
 	platform := strings.ToLower(c.QueryParam("platform"))
 	concept := strings.ToLower(c.QueryParam("concept"))
 
-	words := flash.NewKeywords()
+
 
 	if platform == "" {
 		platform = "all"
 	}
 
+	h.FetchAndSaveReviews( platform, concept)
+
+	return c.JSON(http.StatusOK, "All Ok : Fetched reviews for "+platform+" platform.")
+}
+
+func (h *Handler) FetchAndSaveReviews( platform string, concept string) {
+	words := flash.NewKeywords()
 	dtf := &services.DataTableFilters{}
 	keywords := h.KeywordRepository.RetrieveKeywords(dtf)
 
@@ -35,8 +42,6 @@ func (h *Handler) FetchReview(c echo.Context) (err error) {
 	if platform == "android" || platform == "all" {
 		go h.fetchReviewForApp(concept, "android", h.Config.AllApps, words)
 	}
-
-	return c.JSON(http.StatusOK, "All Ok : Fetched reviews for " + platform + " platform.")
 }
 
 func (h *Handler) fetchReviewForApp(concept string, platform string, config conf.AllApps, words flash.Keywords) bool {

@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"echoApp/conf"
+	"echoApp/handler"
 	"fmt"
+	"github.com/go-co-op/gocron"
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo-contrib/session"
@@ -37,7 +39,7 @@ func main() {
 	// Routes
 	handler := registerRoutes(e, client)
 	handler.Config = conf.New(client)
-
+	scheduleFetchReviews(handler)
 	// Start server
 	appPort := os.Getenv("APP_PORT")
 	e.Logger.Fatal(e.Start(":" + appPort))
@@ -83,4 +85,14 @@ func connectToMongo() (*mongo.Client, context.Context) {
 
 	fmt.Println("Connecting to MongoDB : DONE")
 	return client, dbContext
+}
+
+func scheduleFetchReviews(h *handler.Handler) {
+	schedulerConfigs := h.Config.AllSchedulerConfigs.SchedulerConfigs
+	for _, schedulerConfig := range schedulerConfigs {
+		//fmt.Println(schedulerConfig.Concept,schedulerConfig.Cronexpression)
+		ioscron := gocron.NewScheduler(time.UTC)
+		ioscron.Cron(schedulerConfig.Cronexpression).Do(h.FetchAndSaveReviews,"all",schedulerConfig.Concept)
+		ioscron.StartAsync()
+	}
 }
