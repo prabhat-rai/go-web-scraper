@@ -101,7 +101,7 @@ func GetIosAppsViaConfig() AllIosApps {
 	return iosApps
 }
 
-func GetSchedulerConfigsViaConfig() AllSchedulerConfigs {
+func GetSchedulerConfigs() AllSchedulerConfigs {
 	var schedulerConfigs AllSchedulerConfigs
 	schedulerConfigsProp := os.Getenv("SCHEDULER_CONFIGS")
 	err := json.Unmarshal([]byte(schedulerConfigsProp), &schedulerConfigs)

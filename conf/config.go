@@ -23,6 +23,6 @@ func New(client *mongo.Client) *Config {
 		AllApps: GetAppsConfig(database, true),
 		//AndroidApps: GetAndroidAppsViaConfig(),
 		//IosApps: GetIosAppsViaConfig(),
-		AllSchedulerConfigs:GetSchedulerConfigsViaConfig(),
+		AllSchedulerConfigs:GetSchedulerConfigs(),
 	}
 }
