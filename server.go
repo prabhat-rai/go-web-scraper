@@ -35,12 +35,12 @@ func main() {
 	}()
 
 	// Routes
-	handler := registerRoutes(e, client,configProps.DB_DATABASE)
+	handler := registerRoutes(e, client,configProps.DbConfig.Database)
 	handler.Config = conf.New(client,configProps)
-	scheduleFetchReviews(handler,configProps.SCHEDULER_CONFIGS)
+	scheduleFetchReviews(handler,configProps.SchedulerConfigs)
+
 	// Start server
-	//appPort := os.Getenv("APP_PORT")
-	appPort := configProps.APP_PORT
+	appPort := configProps.AppPort
 	e.Logger.Fatal(e.Start(":" + appPort))
 }
 
@@ -61,8 +61,8 @@ func setupFramework() *echo.Echo {
 }
 
 func connectToMongo(configProps conf.ConfigProps) (*mongo.Client, context.Context) {
-	dbHost := configProps.DB_HOST
-	dbPort := configProps.DB_PORT
+	dbHost := configProps.DbConfig.Host
+	dbPort := configProps.DbConfig.Port
 
 	// DB connection via MongoDB Go Driver
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://" + dbHost + ":"+ dbPort +"/"))
