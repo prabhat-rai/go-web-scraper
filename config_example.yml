@@ -1,0 +1,24 @@
+APP_PORT: "1200"
+
+DB_HOST: "127.0.0.1"
+DB_PORT: "27017"
+DB_DATABASE: "lmg_reviews"
+DB_USER: ""
+DB_PASSWORD: ""
+
+MAIL_CONFIGS:
+  "MAIL_HOST": "smtp.gmail.com"
+  "MAIL_PORT": "587"
+  "MAIL_USER": "user@gmail.com"
+  "MAIL_PASSWORD": "passwordForTheEMailAccount"
+
+SCHEDULER_CONFIGS:
+  "homecentre" : "0 20 * * *"
+  "max" : "0 20 * * *"
+  "centrepoint" : "0 20 * * *"
+  "homebox" : "0 20 * * *"
+  "splash" : "0 20 * * *"
+  "babyshop" : "0 20 * * *"
+  "shoemart" : "0 20 * * *"
+  "lifestyle" : "0 20 * * *"
+  "shukran" : "0 20 * * *"

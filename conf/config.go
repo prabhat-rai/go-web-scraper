@@ -10,16 +10,28 @@ type (
 	Config struct {
 		AllApps     AllApps
 		ConfigProps ConfigProps
-
 	}
+
+	DbConfig struct {
+		Host 		string `mapstructure:"DB_HOST"`
+		Port 		string `mapstructure:"DB_PORT"`
+		Database 	string `mapstructure:"DB_DATABASE"`
+		User  		string `mapstructure:"DB_USER"`
+		Password 	string `mapstructure:"DB_PASSWORD"`
+	}
+
+	MailConfig struct {
+		Host 		string `mapstructure:"MAIL_HOST"`
+		Port 		string `mapstructure:"MAIL_PORT"`
+		User  		string `mapstructure:"MAIL_USER"`
+		Password 	string `mapstructure:"MAIL_PASSWORD"`
+	}
+
 	ConfigProps struct {
-		APP_PORT      string `mapstructure:"APP_PORT"`
-		DB_HOST     string `mapstructure:"DB_HOST"`
-		DB_PORT     string `mapstructure:"DB_PORT"`
-		DB_DATABASE string `mapstructure:"DB_DATABASE"`
-		DB_USER  string `mapstructure:"DB_USER"`
-		DB_PASSWORD string `mapstructure:"DB_PASSWORD"`
-		SCHEDULER_CONFIGS map[string]string `mapstructure:"SCHEDULER_CONFIGS"`
+		AppPort      string `mapstructure:"APP_PORT"`
+		DbConfig DbConfig `mapstructure:"DB_CONFIG"`
+		SchedulerConfigs map[string]string `mapstructure:"SCHEDULER_CONFIGS"`
+		MailConfig MailConfig `mapstructure:"MAIL_CONFIG"`
 	}
 
 )
@@ -27,7 +39,7 @@ type (
 func New(client *mongo.Client,configProps ConfigProps) *Config {
 
 	// Connect to DB
-	dbName := configProps.DB_DATABASE
+	dbName := configProps.DbConfig.Database
 	database := client.Database(dbName)
 	return &Config{
 		AllApps: GetAppsConfig(database, true),

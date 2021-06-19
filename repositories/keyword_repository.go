@@ -25,11 +25,12 @@ type (
 
 
 func (keywordRepo *KeywordRepository) RetrieveKeywords(dataTableFilters *services.DataTableFilters) (allKeywords AllKeywords) {
+	var keyword model.Keyword
+	var searchFilters bson.D
+
 	finalSearchCondition := bson.D{}
 	ctx := context.TODO()
 	keywordCollection := keywordRepo.DB.Collection("keywords")
-
-	var searchFilters bson.D
 
 	if dataTableFilters.Search != "" {
 		searchFilters = append(searchFilters, bson.E{"name", primitive.Regex{Pattern: dataTableFilters.Search, Options: ""}})
@@ -62,8 +63,8 @@ func (keywordRepo *KeywordRepository) RetrieveKeywords(dataTableFilters *service
 		return allKeywords
 	}
 
-	keyword := model.Keyword{}
 	for cursor.Next(context.TODO()) {
+		keyword = model.Keyword{}
 		err := cursor.Decode(&keyword)
 
 		if err != nil {

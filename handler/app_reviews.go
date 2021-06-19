@@ -92,7 +92,8 @@ func (h *Handler) TriggerMailToSubscribers(insertedIDs interface{}) {
 		// If we have reviews send a mail to subscribers.
 		if len(reviews) > 0 {
 			keywordsString := strings.Join(elem.Keywords, ",")
-			go services.SendMailForNewReviews(elem.Subscribers, reviews, elem.GroupName, keywordsString)
+			mailConfig := h.Config.ConfigProps.MailConfig
+			go services.SendMailForNewReviews(elem.Subscribers, reviews, elem.GroupName, keywordsString, mailConfig)
 		}
 	}
 }
