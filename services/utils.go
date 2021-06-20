@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
+	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
 	"strconv"
 )
@@ -105,4 +106,15 @@ func InArray(key string, haystack []string) bool {
 		}
 	}
 	return false
+}
+
+func GetKeyBasedCount(aggregateResultFromDb []bson.M) map[string]int {
+	keyBasedCount := make(map[string]int)
+	for _, data := range aggregateResultFromDb {
+		aggregator := fmt.Sprintf("%s", data["_id"])
+		count := fmt.Sprintf("%d", data["count"])
+		keyBasedCount[aggregator], _ = strconv.Atoi(count)
+	}
+
+	return keyBasedCount
 }
