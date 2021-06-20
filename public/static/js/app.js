@@ -220,6 +220,10 @@ var webScrapperApp= {
                 }
             }
         });
+    },
+
+    loadAnalyticsData : function () {
+
     }
 };
 
@@ -263,5 +267,18 @@ $( document ).ready( function () {
                 }
             });
         })
+    }
+
+    let specificPage = $('#specific_page_method');
+    if( specificPage.length > 0 ) {
+        let page = specificPage.attr('data-page');
+
+        switch (page) {
+            case "analytics":
+                webScrapperApp.loadAnalyticsData();
+                break;
+            default:
+                console.log("Unknown Page");
+        }
     }
 });

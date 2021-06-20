@@ -9,10 +9,10 @@ import (
 )
 
 func (h *Handler) Home(c echo.Context) (err error) {
-	conceptCountsLastWeek := h.AppReviewRepository.CountReviews("$concept", 7, "days")
-	platformCountsLastWeek := h.AppReviewRepository.CountReviews("$platform", 7, "days")
-	conceptCountsLastMonth := h.AppReviewRepository.CountReviews("$concept", 1, "months")
-	platformCountsLastMonth := h.AppReviewRepository.CountReviews("$platform", 1, "months")
+	conceptCountsLastWeek := h.AppReviewRepository.CountReviews("concept", 7, "days")
+	platformCountsLastWeek := h.AppReviewRepository.CountReviews("platform", 7, "days")
+	conceptCountsLastMonth := h.AppReviewRepository.CountReviews("concept", 1, "months")
+	platformCountsLastMonth := h.AppReviewRepository.CountReviews("platform", 1, "months")
 
 	userData := services.GetAuthenticatedUser(c)
 

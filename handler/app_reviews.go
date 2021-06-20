@@ -141,21 +141,3 @@ func (h *Handler) ListReviews(c echo.Context) (err error) {
 		"keyword_groups" : []string{"SHUKRAN"},
 	})
 }
-
-func (h *Handler) GetDashboardContent(c echo.Context) (err error) {
-	platformCountsLastWeek := h.AppReviewRepository.CountReviews("$platform", 7, "days")
-	platformCountsLastMonth := h.AppReviewRepository.CountReviews("$platform", 1, "months")
-	conceptCountsLastWeek := h.AppReviewRepository.CountReviews("$concept", 7, "days")
-	conceptCountsLastMonth := h.AppReviewRepository.CountReviews("$concept", 1, "months")
-
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"concept" : map[string]interface{}{
-			"week" : services.GetKeyBasedCount(conceptCountsLastWeek),
-			"month" : services.GetKeyBasedCount(conceptCountsLastMonth),
-		},
-		"platform" : map[string]interface{}{
-			"week" : services.GetKeyBasedCount(platformCountsLastWeek),
-			"month" : services.GetKeyBasedCount(platformCountsLastMonth),
-		},
-	})
-}

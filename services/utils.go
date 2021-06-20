@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"strconv"
 )
@@ -114,6 +115,24 @@ func GetKeyBasedCount(aggregateResultFromDb []bson.M) map[string]int {
 		aggregator := fmt.Sprintf("%s", data["_id"])
 		count := fmt.Sprintf("%d", data["count"])
 		keyBasedCount[aggregator], _ = strconv.Atoi(count)
+	}
+
+	return keyBasedCount
+}
+
+func GetKeyBasedCountForDailyBasis(aggregateResultFromDb []bson.M, aggregator string) map[string]map[string]int {
+	keyBasedCount := make(map[string]map[string]int)
+
+	for _, data := range aggregateResultFromDb {
+		aggregator := fmt.Sprintf("%s", data["_id"].(primitive.M)[aggregator])
+		dateKey := fmt.Sprintf("%s", data["_id"].(primitive.M)["review_date"])
+		count, _ := strconv.Atoi(fmt.Sprintf("%d", data["count"]))
+
+		if keyBasedCount[aggregator] == nil {
+			keyBasedCount[aggregator] = make(map[string]int)
+		}
+
+		keyBasedCount[aggregator][dateKey] = count
 	}
 
 	return keyBasedCount
