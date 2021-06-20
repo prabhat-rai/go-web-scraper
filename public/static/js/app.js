@@ -44,7 +44,10 @@ var webScrapperApp= {
             ? tableObj.attr( 'data-sort-order' ) : webScrapperApp.sortColOrder;
         var collapseColumns = tableObj.attr( 'data-collapse-data-columns' )
             ? tableObj.attr('data-collapse-data-columns') : false;
+        var dateColumns = tableObj.attr( 'data-date-columns' )
+            ? tableObj.attr('data-date-columns') : false;
         var columnListToCollapse = collapseColumns !== false ? collapseColumns.split(',') : [];
+        var columnListForDate = dateColumns !== false ? dateColumns.split(',') : [];
 
         var statusColumns = tableObj.attr( 'data-status-columns' )
             ? tableObj.attr('data-status-columns') : false;
@@ -150,7 +153,19 @@ var webScrapperApp= {
                                 return "<a href='#' class='btn btn-danger btn-circle'><i class='fas fa-times'></i></a>";
                             }
                         }
-                    }
+                    },
+                    {
+                        targets: columnListForDate.map(Number),
+                        render: function(cellData) {
+                            var d = new Date(0);
+                            d.setUTCSeconds(cellData);
+                            return d.toLocaleDateString('en-GB', {
+                                day : 'numeric',
+                                month : 'numeric',
+                                year : 'numeric',
+                            });
+                        }
+                    },
                 ]
             });
         } );
