@@ -21,8 +21,8 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered data-table-list" id="reviewListDataTable" data-status-columns="1"
-                       data-url="/ajax/keywords/list" width="100%" cellspacing="0">
+                <table class="table table-bordered data-table-list" id="keywordListDataTable" data-status-columns="1"
+                       data-url="/ajax/keywords/list" width="100%" cellspacing="0" data-entity="keywords">
                     <thead>
                         <tr>
                             <th data-dt-name="name" data-dt-query="name">Name</th>
@@ -48,20 +48,4 @@
     <!-- Page level plugins -->
     <script src="/static/vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="/static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
-    <script>
-    function changeValue(name,status) {
-        console.log("HELLLLLO")
-    var appName=name;
-    var appStatus=status;
-    
-        $.ajax({
-                    url: "apps/status?name="+appName+"&active="+appStatus,
-                    dataType: 'json',
-                    method : 'POST',
-                    success: function( response ) {
-                       alert('Success');
-                    }
-                });
-    }
-    </script>
 {{end}}

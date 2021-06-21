@@ -143,14 +143,29 @@ var webScrapperApp= {
                     },
                     {
                         targets: columnListForStatus.map(Number),
-                        render: function(cellData) {
-                            
+                        render: function(cellData, type, row) {
+                            let entity = $('.data-table-list').first().attr('data-entity');
+                            let active = false;
+                            let attributeId = row.id;
+
+                            if(row.active) {
+                                active = true;
+                            }
+
                             if (cellData === true) {
-                                var tHead = $(this);
-                                console.log(tHead.attr( 'data-dt-name' ))
-                                return '<label><input id="active" name="active" type="checkbox" class="fas fa-check btn btn-success btn-circle" value = true onchange="changeValue()" checked style="visibility:hidden;"><span id="active-toggle" class="btn btn-success btn-circle"> <i id="active-toggle-icon" class="fas fa-check"></i></span></input></label>';
+                                return '<label><input id="active" name="active" type="checkbox" class="fas fa-check btn btn-success btn-circle" ' +
+                                    'onchange="webScrapperApp.changeActiveStatus(\'' + entity + '\',\'' + attributeId + '\',' + active + ')" ' +
+                                    'checked style="visibility:hidden;">' +
+                                        '<span id="active-toggle" class="btn btn-success btn-circle"> ' +
+                                        '<i id="active-toggle-icon" class="fas fa-check"></i>' +
+                                    '</span></input></label>';
                             } else {
-                                return '<label><input id="inactive" name="active" type="checkbox"  class="fas fa-check btn btn-danger btn-circle" value = "" onchange="changeValue({{.Name}},!{{.Active}})" style="visibility:hidden;" checked><span id="inactive-toggle" class="btn btn-danger btn-circle"> <i id="inactive-toggle-icon" class="fas fa-times"></i></span></input></label>';
+                                return '<label><input id="inactive" name="active" type="checkbox"  class="fas fa-check btn btn-danger btn-circle" ' +
+                                    'onchange="webScrapperApp.changeActiveStatus(\'' + entity + '\',\'' + attributeId + '\',' + active + ')" ' +
+                                    'style="visibility:hidden;" checked>' +
+                                        '<span id="inactive-toggle" class="btn btn-danger btn-circle"> ' +
+                                            '<i id="inactive-toggle-icon" class="fas fa-times"></i>' +
+                                    '</span></input></label>';
                             }
                         }
                     }
@@ -208,6 +223,18 @@ var webScrapperApp= {
                 }
             }
         });
+    },
+
+    changeActiveStatus : function (type, name,status) {
+        $.ajax({
+            url: type + "/status?name="+name+"&active="+status,
+            dataType: 'json',
+            method : 'POST',
+            success: function( response ) {
+                utility.showNotification("Done" + 'd', 'text-success', 5, 'alert-info');
+            }
+        });
+
     }
 };
 
