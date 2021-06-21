@@ -70,20 +70,15 @@ func (h *Handler) AddApps(c echo.Context) (err error) {
 }
 
 func (h *Handler) UpdateApps(c echo.Context) (err error) {
-	active := true
+	active := false
+
 	if c.QueryParam("active") == "true" {
 		active = true
-	} else{
-		active = false
 	}
+
 	app := &model.Apps{
 		Name: c.QueryParam("name"),
 		Active: active,
-	}
-
-	err = c.Bind(app)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Something went wrong!! Please Try Again.")
 	}
 
 	err = h.AppRepository.UpdateApp(app)
