@@ -12,6 +12,7 @@ MAIL_CONFIG:
   MAIL_PORT: "587"
   MAIL_USER: "user@gmail.com"
   MAIL_PASSWORD: "passwordForTheEMailAccount"
+  SEND_MAIL: "Y"
 
 SCHEDULER_CONFIGS:
   homecentre : "0 20 * * *"
