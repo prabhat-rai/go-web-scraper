@@ -25,6 +25,87 @@ func (h *Handler) AppsList(c echo.Context) (err error) {
 	})
 }
 
+func (h *Handler) CreateApps(c echo.Context) (err error) {
+	userData := services.GetAuthenticatedUser(c)
+	return c.Render(http.StatusOK, "create_apps.tmpl", map[string]interface{}{
+		"name": userData.Name,
+	})
+}
+func (h *Handler) AddApps(c echo.Context) (err error) {
+	// log.Println(c.FormValue("active"))
+	// active := true
+	// if c.FormValue("active") == "true" {
+	// 	log.Println("TRUEEE")
+	// 	active := true
+	// } else{
+	// 	log.Println("FALSEE")
+	// 	active := false
+	// }
+	app := &model.Apps{
+		Name: c.FormValue("app_name"),
+		GoogleAppId: c.FormValue("google_app_id"),
+		IosAppId: c.FormValue("ios_app_id"),	
+	}
+
+	err = c.Bind(app)
+	if err != nil {
+		//place holder to render register page with error message
+		return c.Render(http.StatusOK, "create_apps.tmpl", map[string]interface{}{
+			"Flash": "Something went wrong!! Please Try Again.",
+		})
+	}
+	err = h.AppRepository.CreateApp(app)
+	if err != nil {
+		return c.Render(http.StatusOK, "create_apps.tmpl", map[string]interface{}{
+			"Flash": "Something went wrong!! Please Try Again.",
+		})
+	}
+
+	// services.SetSessionValue(c, "authenticated", true)
+	// services.SetSessionValue(c, "userName", user.Name)
+	// services.SetSessionValue(c, "userEmail", user.Email)
+	 c.Redirect(http.StatusSeeOther, "/apps/add")
+
+	return nil
+}
+
+func (h *Handler) UpdateApps(c echo.Context) (err error) {
+	active := true
+	if c.QueryParam("active") == "true" {
+		active = true
+	} else{
+		active = false
+	}
+	app := &model.Apps{
+		Name: c.QueryParam("name"),
+		Active: active,
+	}
+
+	err = c.Bind(app)
+	if err != nil {
+		//place holder to render register page with error message
+		return c.Render(http.StatusOK, "apps_list.tmpl", map[string]interface{}{
+			"Flash": "Something went wrong!! Please Try Again.",
+		})
+	}
+	err = h.AppRepository.UpdateApp(app)
+	if err != nil {
+		return c.Render(http.StatusOK, "apps_list.tmpl", map[string]interface{}{
+			"Flash": "Something went wrong!! Please Try Again.",
+		})
+	}
+
+	userData := services.GetAuthenticatedUser(c)
+	appDetails := conf.GetAppsConfig(h.DB, false)
+	return c.Render(http.StatusOK, "apps_list.tmpl", map[string]interface{}{
+		"name": userData.Name,
+		"apps": appDetails.Apps,
+	})
+
+	return nil
+}
+
+
 func (h *Handler) LoginForm(c echo.Context) (err error) {
 	return c.Render(http.StatusOK, "login.tmpl", map[string]interface{}{
 		"Flash": services.GetFlashMessage(c),

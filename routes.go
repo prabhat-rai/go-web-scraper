@@ -24,6 +24,9 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) *handler.Handler {
 		AppReviewRepository: &repositories.AppReviewRepository{
 			DB: database,
 		},
+		AppRepository: &repositories.AppRepository{
+			DB: database,
+		},
 		KeywordRepository: &repositories.KeywordRepository{
 			DB: database,
 		},
@@ -44,9 +47,15 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) *handler.Handler {
 
 	// Listing Routes
 	e.GET("/apps", h.AppsList, middlewares.Authenticated)
+	e.GET("/apps/add", h.CreateApps, middlewares.Authenticated)
+	e.POST("/apps/status", h.UpdateApps, middlewares.Authenticated)
+	e.POST("/apps/add", h.AddApps, middlewares.Authenticated)
 	e.GET("/reviews", h.ListReviews, middlewares.Authenticated)
 	e.GET("/keywords", h.ListKeywords, middlewares.Authenticated)
+	e.GET("/keywords/add", h.CreateKeywords, middlewares.Authenticated)
+	e.POST("/keywords/add", h.AddKeywords, middlewares.Authenticated)
 	e.GET("/keyword-groups", h.ListKeywordGroups, middlewares.Authenticated)
+	e.POST("/keyword-groups/add", h.AddKeywordGroups, middlewares.Authenticated)
 
 	// AJAX listing Routes
 	e.GET("/ajax/reviews/list", h.RetrieveReviews, middlewares.Authenticated)

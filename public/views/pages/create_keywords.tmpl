@@ -1,0 +1,150 @@
+{{template "app" .}}
+{{define "title"}}Keywords{{end}}
+{{define "header_js_css"}}
+    <!-- Custom styles for this page -->
+    <link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <script src="//code.jquery.com/jquery.min.js"></script>
+{{end}}
+
+
+{{define "main"}}
+
+    <title>SB Admin 2 - </title>
+
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-gradient-primary">
+
+    <div class="container">
+
+        <div class="card o-hidden border-0 shadow-lg my-5">
+            <div class="card-body p-0">
+                <!-- Nested Row within Card Body -->
+                <div class="row">
+                 <div class="col-lg-2"></div>
+                    <div class="col-lg-8">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">Add Keywords!</h1>
+                            </div>
+                            {{if .page}}
+                            <form action="/keywordg-roups/add" method="POST"  class="user">
+                                <div class="form-group row" novalidate>
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <input name="keyword_name" type="text" class="form-control form-control-user" id="exampleFirstName"
+                                            placeholder="Keyword Name" required>
+                                    </div>
+                                    <div class="col-sm-6">
+                                    <label >
+                                    Active? :
+                                        <input id="active" name="active" type="checkbox" class="fas fa-check btn btn-success btn-circle" value = true onchange="myFunction()" checked style="visibility:hidden;">
+                                           <span id="toggle" class="btn btn-success btn-circle"> <i id="toggle-icon" class="fas fa-check"></i></span>
+                                        </input>
+                                    </label>
+                                        
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-user btn-block"> Submit
+                                </button>
+                            </form>
+                            {{else}}
+
+                            <form action="/keyword-groups/add" method="POST"  class="user">
+                                <div class="form-group row" novalidate>
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <input name="keyword_group" type="text" class="form-control form-control-user" id="exampleFirstName"
+                                            placeholder="Keyword Group" required>
+                                    </div>
+                                     <div class="col-sm-6 mb-3 mb-sm-0">
+                                 <div class="demo">
+                                 Active? :
+                                        <input id="active" name="active" type="checkbox" class="fas fa-check btn btn-success btn-circle" value = true onchange="myFunction()" checked style="visibility:hidden;">
+                                           <span id="toggle" class="btn btn-success btn-circle"> <i id="toggle-icon" class="fas fa-check"></i></span>
+                                        </input>
+                                    </label>
+                                    </div>
+                                    </div>
+                                    </div>
+                            <div class="form-group row" novalidate>
+                            <div class="col-sm-12 mb-3 mb-sm-0">
+                                     Keywords:
+                              <select name="keywords[]" id="keywordGroupSelect" class="ratings-filter select2-dropdown form-control form-control-user" data-filter-on="keyword_groups"
+                                    data-url="/ajax/keyword-groups/list" data-text-key="group_name" style="width: 200px; height: 33px" multiple>
+                                <option value="">-Group-</option>
+                                {{range .keyword_groups}}
+                                    <option value="{{.}}">{{.}}</option>
+                                {{end}}
+                            </select>
+                                        
+                                    </div>
+                                </div>
+                                 <button type="submit" class="btn btn-primary btn-user btn-block"> Submit  </button>
+                                    </div>
+                                </div>
+            
+                               
+                              
+                            </form>
+                            {{end}}
+                        </div>
+                    </div>
+                </div>
+                <hr>
+            </div>
+            <div class="col-lg-2"></div>
+        </div>
+
+    </div>
+
+{{end}}
+
+{{define "footer_js_css"}}
+    <!-- Page level plugins -->
+    <script src="/static/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="/static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+   
+    
+
+    <script>
+
+    var response = '';
+    var xhr = jQuery.ajax(
+        {url:'/ajax/keywords/list',
+        dataType: 'json',
+    }
+    , function (result) {
+        result = JSON.parse(result.responseJSON);
+        return result
+    });
+    console.log(xhr[0])
+  
+
+
+    function myFunction() {
+
+      if(document.getElementById('active').checked) {
+         document.getElementById("toggle").className = "fas fa-check btn btn btn-success btn-circle"; 
+         document.getElementById('active').value = true;
+         document.getElementById("toggle-icon").className = "fas fa-check"
+         
+    } else {
+        document.getElementById("toggle").className = "fas fa-check btn  btn btn-danger btn-circle"; 
+        document.getElementById('active').value = false;
+        document.getElementById("toggle-icon").className = "fas fa-times"
+    }
+    }
+
+</script>
+{{end}}

@@ -33,6 +33,7 @@ type (
 	AllApps struct {
 		Apps []model.Apps `json:"all_apps"`
 	}
+
 )
 
 func GetAppsConfig(db *mongo.Database, onlyActiveRecords bool) AllApps {
@@ -67,6 +68,7 @@ func GetAppsConfig(db *mongo.Database, onlyActiveRecords bool) AllApps {
 
 	return allApps
 }
+
 
 func GetAndroidAppsViaConfig() AllAndroidApps {
 	var androidApps AllAndroidApps

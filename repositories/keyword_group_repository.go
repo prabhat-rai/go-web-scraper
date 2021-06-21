@@ -184,3 +184,16 @@ func (keywordGroupRepo *KeywordGroupRepository) GetGroupsWithActiveSubscribers()
 
 	return allKeywordGroups
 }
+
+func (keywordGroupRepo *KeywordGroupRepository) CreateKeywordGroup(u *model.KeywordGroup) (err error) {
+	keywordCollection := keywordGroupRepo.DB.Collection("keyword_groups")
+	dbContext := context.TODO()
+	result, err := keywordCollection.InsertOne(dbContext, u)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	log.Println("Inserted Docs: ", result.InsertedID)
+	return nil
+}

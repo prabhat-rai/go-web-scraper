@@ -144,10 +144,13 @@ var webScrapperApp= {
                     {
                         targets: columnListForStatus.map(Number),
                         render: function(cellData) {
+                            
                             if (cellData === true) {
-                                return "<a href='#' class='btn btn-success btn-circle'><i class='fas fa-check'></i></a>";
+                                var tHead = $(this);
+                                console.log(tHead.attr( 'data-dt-name' ))
+                                return '<label><input id="active" name="active" type="checkbox" class="fas fa-check btn btn-success btn-circle" value = true onchange="changeValue()" checked style="visibility:hidden;"><span id="active-toggle" class="btn btn-success btn-circle"> <i id="active-toggle-icon" class="fas fa-check"></i></span></input></label>';
                             } else {
-                                return "<a href='#' class='btn btn-danger btn-circle'><i class='fas fa-times'></i></a>";
+                                return '<label><input id="inactive" name="active" type="checkbox"  class="fas fa-check btn btn-danger btn-circle" value = "" onchange="changeValue({{.Name}},!{{.Active}})" style="visibility:hidden;" checked><span id="inactive-toggle" class="btn btn-danger btn-circle"> <i id="inactive-toggle-icon" class="fas fa-times"></i></span></input></label>';
                             }
                         }
                     }

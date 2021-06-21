@@ -79,6 +79,22 @@ func (keywordRepo *KeywordRepository) RetrieveKeywords(dataTableFilters *service
 	if allKeywords.Data == nil {
 		allKeywords.Data = make([]model.Keyword, 0)
 	}
-
 	return allKeywords
 }
+func (keywordRepo *KeywordRepository) CreateKeyword(u *model.Keyword) (err error) {
+	log.Println("hello")
+	u.Name = u.Name
+	keywordCollection := keywordRepo.DB.Collection("keywords")
+	dbContext := context.TODO()
+	result, err := keywordCollection.InsertOne(dbContext, u)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	log.Println("Inserted Docs: ", result.InsertedID)
+	return nil
+}
+
+
+

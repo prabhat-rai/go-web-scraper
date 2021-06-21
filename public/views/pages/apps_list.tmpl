@@ -46,14 +46,19 @@
                                 <td>{{.IosAppId}}</td>
                                 <td>
                                     {{if .Active}}
-                                        <a href="#" class="btn btn-success btn-circle">
-                                            <i class="fas fa-check"></i>
-                                        </a>
+                                         <label>
+                                        <input id="active" name="active" type="checkbox" class="fas fa-check btn btn-success btn-circle" value = true onchange="changeValue({{.Name}},!{{.Active}})" checked style="visibility:hidden;">
+                                           <span id="active-toggle" class="btn btn-success btn-circle"> <i id="active-toggle-icon" class="fas fa-check"></i></span>
+                                        </input>
+                                    </label>
                                     {{else}}
-                                        <a href="#" class="btn btn-danger btn-circle">
-                                            <i class="fas fa-times"></i>
-                                        </a>
+                                         <label>
+                                     <input id="inactive" name="active" type="checkbox"  class="fas fa-check btn btn-danger btn-circle" value = "" onchange="changeValue({{.Name}},!{{.Active}})" style="visibility:hidden;" checked>
+                                           <span id="inactive-toggle" class="btn btn-danger btn-circle"> <i id="inactive-toggle-icon" class="fas fa-times"></i></span>
+                                        </input>
+                                    </label>
                                     {{end}}
+                                   
                                 </td>
                                 <td>
                                     <div class="dropdown mb-4">
@@ -90,4 +95,36 @@
     <!-- Page level plugins -->
     <script src="/static/vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="/static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script>
+    function changeValue(name,status) {
+    var appName=name;
+    var appStatus=status;
+    
+        $.ajax({
+                    url: "apps/status?name="+appName+"&active="+appStatus,
+                    dataType: 'json',
+                    method : 'POST',
+                    success: function( response ) {
+                       alert('Success');
+                    }
+                });
+                
+}
+        
+        function myFunction() {
+             status = !document.getElementById("active").value
+      if(status) {
+         document.getElementById("active-toggle").className = "btn btn-success btn-circle"; 
+         document.getElementById("active-toggle-icon").className = "fas fa-check"
+         
+    } else {
+        document.getElementById("inactive-toggle").className = "btn btn-danger btn-circle"; 
+        document.getElementById("inactive-toggle-icon").className = "fas fa-times"
+    }
+    }
+
+    
+
+    
+    </script>
 {{end}}
