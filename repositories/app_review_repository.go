@@ -44,13 +44,14 @@ func (appReviewRepo *AppReviewRepository) AddBulkReviews(appReviews []*model.App
 }
 
 func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews(dataTableFilters *services.DataTableFilters, filters map[string] string, keywords []string) (allReviews AllReviews) {
-	finalSearchCondition := bson.D{}
-	ctx := context.TODO()
-	appReviewCollection := appReviewRepo.DB.Collection("app_reviews")
-
+	var review model.AppReview
 	var andFilters bson.D
 	var searchFilters bson.D
 	var keywordFilters bson.M
+
+	finalSearchCondition := bson.D{}
+	ctx := context.TODO()
+	appReviewCollection := appReviewRepo.DB.Collection("app_reviews")
 
 	for key, value := range filters {
 		andFilters = append(andFilters, bson.E{key, value})
@@ -102,8 +103,8 @@ func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews(dataTableFilters *
 		return allReviews
 	}
 
-	review := model.AppReview{}
 	for cursor.Next(context.TODO()) {
+		review = model.AppReview{}
 		err := cursor.Decode(&review)
 
 		if err != nil {
@@ -142,6 +143,7 @@ func (appReviewRepo *AppReviewRepository) GetLatestReviewId(platform string, con
 }
 
 func (appReviewRepo *AppReviewRepository) GetReviewsWithMatchingKeywords(keywords []string, objectIds interface{}) (allReviews []model.AppReview) {
+	var review model.AppReview
 	finalSearchCondition := bson.D{}
 	var andFilters bson.M
 	//var searchFilters bson.D
@@ -177,8 +179,8 @@ func (appReviewRepo *AppReviewRepository) GetReviewsWithMatchingKeywords(keyword
 		return allReviews
 	}
 
-	review := model.AppReview{}
 	for cursor.Next(context.TODO()) {
+		review = model.AppReview{}
 		err := cursor.Decode(&review)
 
 		if err != nil {

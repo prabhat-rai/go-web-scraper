@@ -3,12 +3,16 @@ package services
 import (
 	"echoApp/model"
 	"encoding/xml"
+	"fmt"
 	"github.com/dav009/flash"
 	"github.com/n0madic/google-play-scraper/pkg/reviews"
 	"github.com/n0madic/google-play-scraper/pkg/store"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
+	"time"
 )
 
 type Feed struct {
@@ -60,13 +64,13 @@ func LoadAndroidReviews(id string, appName string, keywords flash.Keywords, late
 
 		appReviews = append(appReviews, &model.AppReview{
 			ReviewId: review.ID,
-			ReviewDate: review.Timestamp.String(),
+			ReviewDate: primitive.Timestamp{T:uint32(review.Timestamp.Unix())},
 			UserName: review.Reviewer,
 			Title: "",
 			Description: review.Text,
 			Rating: strconv.Itoa(review.Score),
-			CreatedAt: review.Timestamp.String(),
-			UpdatedAt: review.Timestamp.String(),
+			CreatedAt: primitive.Timestamp{T:uint32(time.Now().Unix())},
+			UpdatedAt: primitive.Timestamp{T:uint32(time.Now().Unix())},
 			Platform: "android",
 			Version: review.Version,
 			Concept: appName,
@@ -109,13 +113,13 @@ func LoadIosReviews(id string, appName string, keywords flash.Keywords, latestRe
 
 		appReviews = append(appReviews, &model.AppReview{
 			ReviewId: entry.Id,
-			ReviewDate: entry.Updated,
+			ReviewDate: primitive.Timestamp{T:uint32(formatIosTimestamp(entry.Updated))},
 			UserName: entry.Author.Name,
 			Title: entry.Title,
 			Description: entry.Content[0].Data,
 			Rating: entry.Rating,
-			CreatedAt: entry.Updated,
-			UpdatedAt: entry.Updated,
+			CreatedAt: primitive.Timestamp{T:uint32(time.Now().Unix())},
+			UpdatedAt: primitive.Timestamp{T:uint32(time.Now().Unix())},
 			Platform: "ios",
 			Version: entry.Version,
 			Concept: appName,
@@ -124,4 +128,17 @@ func LoadIosReviews(id string, appName string, keywords flash.Keywords, latestRe
 	}
 
 	return appReviews
+}
+
+func formatIosTimestamp(str string) int64 {
+	str = str[0:strings.LastIndex(str, "-07:00")]
+	layout := "2006-01-02T15:04:05"
+	t, err := time.Parse(layout, str)
+
+	if err != nil {
+		fmt.Println(err)
+		return time.Now().Unix()
+	}
+
+	return t.Unix()
 }

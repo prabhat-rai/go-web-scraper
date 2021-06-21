@@ -3,30 +3,30 @@ package main
 import (
 	"context"
 	"echoApp/conf"
+	"echoApp/handler"
 	"fmt"
+	"github.com/go-co-op/gocron"
 	"github.com/gorilla/sessions"
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"os"
 	"time"
 )
 
 func main() {
-	err := godotenv.Load()
+	configProps, err := conf.LoadConfig(".")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal("cannot load config:", err)
 	}
 
 	// Get instance of echo framework with template setup
 	e := setupFramework()
 
 	// Database connection
-	client, dbContext := connectToMongo()
+	client, dbContext := connectToMongo(configProps)
 	defer func() {
 		clientError := client.Disconnect(dbContext)
 		if clientError != nil {
@@ -35,11 +35,12 @@ func main() {
 	}()
 
 	// Routes
-	handler := registerRoutes(e, client)
-	handler.Config = conf.New(client)
+	handler := registerRoutes(e, client,configProps.DbConfig.Database)
+	handler.Config = conf.New(client,configProps)
+	scheduleFetchReviews(handler,configProps.SchedulerConfigs)
 
 	// Start server
-	appPort := os.Getenv("APP_PORT")
+	appPort := configProps.AppPort
 	e.Logger.Fatal(e.Start(":" + appPort))
 }
 
@@ -59,9 +60,9 @@ func setupFramework() *echo.Echo {
 	return e
 }
 
-func connectToMongo() (*mongo.Client, context.Context) {
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
+func connectToMongo(configProps conf.ConfigProps) (*mongo.Client, context.Context) {
+	dbHost := configProps.DbConfig.Host
+	dbPort := configProps.DbConfig.Port
 
 	// DB connection via MongoDB Go Driver
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://" + dbHost + ":"+ dbPort +"/"))
@@ -83,4 +84,12 @@ func connectToMongo() (*mongo.Client, context.Context) {
 
 	fmt.Println("Connecting to MongoDB : DONE")
 	return client, dbContext
+}
+
+func scheduleFetchReviews(h *handler.Handler, schedulerConfigs map[string]string) {
+	for concept, cronexpression := range schedulerConfigs {
+		ioscron := gocron.NewScheduler(time.UTC)
+		ioscron.Cron(cronexpression).Do(h.FetchAndSaveReviews,"all",concept)
+		ioscron.StartAsync()
+	}
 }

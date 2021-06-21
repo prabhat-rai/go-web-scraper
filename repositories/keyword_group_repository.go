@@ -24,6 +24,7 @@ type (
 )
 
 func (keywordGroupRepo *KeywordGroupRepository) RetrieveKeywordGroups(dataTableFilters *services.DataTableFilters, userData *model.User, activeRecords string) (allKeywordGroups AllKeywordGroups) {
+	var keywordGroup model.KeywordGroup
 	finalSearchCondition := bson.D{}
 	ctx := context.TODO()
 	keywordCollection := keywordGroupRepo.DB.Collection("keyword_groups")
@@ -80,8 +81,8 @@ func (keywordGroupRepo *KeywordGroupRepository) RetrieveKeywordGroups(dataTableF
 		return allKeywordGroups
 	}
 
-	keywordGroup := model.KeywordGroup{}
 	for cursor.Next(context.TODO()) {
+		keywordGroup = model.KeywordGroup{}
 		err := cursor.Decode(&keywordGroup)
 
 		if err != nil {
@@ -155,18 +156,17 @@ func (keywordGroupRepo *KeywordGroupRepository) UpdateSubscriptionForUser(keyGro
 
 
 func (keywordGroupRepo *KeywordGroupRepository) GetGroupsWithActiveSubscribers() (allKeywordGroups []model.KeywordGroup) {
+	var keywordGroup model.KeywordGroup
 	keywordCollection := keywordGroupRepo.DB.Collection("keyword_groups")
 	ctx := context.TODO()
 
-	filter := bson.D{{"$or", []interface{}{
-		bson.D{{"subscribers.0", bson.M{"$exists": true}}},
-	}}}
+	filter := bson.D{{"subscribers.0", bson.M{"$exists" : true}}}
 
 	findOptions := options.Find()
 	cursor, err := keywordCollection.Find(ctx, filter, findOptions)
 
-	keywordGroup := model.KeywordGroup{}
 	for cursor.Next(context.TODO()) {
+		keywordGroup = model.KeywordGroup{}
 		err := cursor.Decode(&keywordGroup)
 
 		if err != nil {

@@ -2,20 +2,24 @@ package services
 
 import (
 	"bytes"
+	"echoApp/conf"
 	"echoApp/model"
 	"fmt"
 	"html/template"
 	"log"
 	"net/smtp"
-	"os"
+	"strings"
 )
 
-func SendMailForNewReviews(recieverEmails []string, reviews []model.AppReview, groupName string, keywords string) {
+func SendMailForNewReviews(receiverEmails []string, reviews []model.AppReview, groupName string, keywords string, mailConfig conf.MailConfig) {
+	fmt.Printf("\nSending mail for %s Group to : %s", groupName, strings.Join(receiverEmails, " & "))
+
 	// SMTP server configuration.
-	from := os.Getenv("MAIL_USER")
-	password := os.Getenv("MAIL_PASSWORD")
-	smtpHost := os.Getenv("MAIL_HOST")
-	smtpPort := os.Getenv("MAIL_PORT")
+	from := mailConfig.User
+	password := mailConfig.Password
+	smtpHost := mailConfig.Host
+	smtpPort := mailConfig.Port
+
 	auth := smtp.PlainAuth("", from, password, smtpHost)
 
 	emailTemplate, errs := template.ParseFiles("public/views/mails/subscribed_reviews.html")
@@ -25,7 +29,7 @@ func SendMailForNewReviews(recieverEmails []string, reviews []model.AppReview, g
 
 	var body bytes.Buffer
 	headers := "MIME-version: 1.0;\nContent-Type: text/html;"
-	body.Write([]byte(fmt.Sprintf("Subject: New Reviews Added For " + groupName +"!\r\n", headers)))
+	body.Write([]byte(fmt.Sprintf("Subject: New Reviews Added For Group " + groupName +"!\r\n", headers)))
 
 	_ = emailTemplate.Execute(&body, struct {
 		Reviews []model.AppReview
@@ -38,7 +42,7 @@ func SendMailForNewReviews(recieverEmails []string, reviews []model.AppReview, g
 	})
 
 	// Sending email.
-	err := smtp.SendMail(smtpHost + ":" + smtpPort, auth, from, recieverEmails, body.Bytes())
+	err := smtp.SendMail(smtpHost + ":" + smtpPort, auth, from, receiverEmails, body.Bytes())
 	if err != nil {
 		fmt.Println(err)
 		return
