@@ -197,3 +197,19 @@ func (keywordGroupRepo *KeywordGroupRepository) CreateKeywordGroup(u *model.Keyw
 	log.Println("Inserted Docs: ", result.InsertedID)
 	return nil
 }
+
+func (keywordGroupRepo *KeywordGroupRepository) UpdateKeywordGroupStatus(u *model.KeywordGroup) (err error) {
+	filter := bson.D{{"_id", u.ID}}
+	ctx := context.TODO()
+	operation := "$set"
+	keywordGroupCollection := keywordGroupRepo.DB.Collection("keyword_groups")
+	updateData := bson.M{operation: bson.M{"active": u.Active}}
+	updateResult, err := keywordGroupCollection.UpdateOne(ctx, filter, updateData)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	log.Println("Updated Docs: ", updateResult)
+	return nil
+}

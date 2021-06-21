@@ -5,7 +5,7 @@ import (
 	"echoApp/model"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"log"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (h *Handler) ListKeywords(c echo.Context) (err error) {
@@ -33,26 +33,15 @@ func (h *Handler) CreateKeywords(c echo.Context) (err error) {
 }
 
 func (h *Handler) AddKeywords(c echo.Context) (err error) {
-	log.Println(c.FormValue("active"))
-	active := true
+	active := false
 	if c.FormValue("active") == "true" {
-		log.Println("TRUEEE")
 		active = true
 	} else{
-		log.Println("FALSEE")
 		active = false
 	}
 	keyword := &model.Keyword{
 		Name: c.FormValue("keyword_name"),
 		Active:active,
-	}
-
-	err = c.Bind(keyword)
-	if err != nil {
-		//place holder to render register page with error message
-		return c.Render(http.StatusOK, "create_keywords.tmpl", map[string]interface{}{
-			"Flash": "Something went wrong!! Please Try Again.",
-		})
 	}
 
 	err = h.KeywordRepository.CreateKeyword(keyword)
@@ -61,13 +50,37 @@ func (h *Handler) AddKeywords(c echo.Context) (err error) {
 			"Flash": "Something went wrong!! Please Try Again.",
 		})
 	}
-
-	// services.SetSessionValue(c, "authenticated", true)
-	// services.SetSessionValue(c, "userName", user.Name)
-	// services.SetSessionValue(c, "userEmail", user.Email)
-	 c.Redirect(http.StatusSeeOther, "/keywords/add")
+	userData := services.GetAuthenticatedUser(c)
+	return c.Render(http.StatusOK, "create_keywords.tmpl", map[string]interface{}{
+		"name": userData.Name,
+		"page": "keywords",
+		
+	})
 
 	return nil
+}
+
+func (h *Handler) UpdateKeywordsStatus(c echo.Context) (err error) {
+	active := false
+	id, err := primitive.ObjectIDFromHex(c.QueryParam("id"))
+	if err != nil {
+	panic(err)
+	}
+	if c.QueryParam("active") == "true" {
+		active = true
+	}
+
+	keyword := &model.Keyword{
+		ID: id,
+		Active: !active,
+	}
+
+	err = h.KeywordRepository.UpdateKeywordStatus(keyword)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Something went wrong!! Please Try Again.")
+	}
+
+	return c.JSON(http.StatusOK, "Updated")
 }
 
 

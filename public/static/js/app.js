@@ -227,7 +227,7 @@ var webScrapperApp= {
 
     changeActiveStatus : function (type, name,status) {
         $.ajax({
-            url: type + "/status?name="+name+"&active="+status,
+            url: "/ajax/" + type + "/status?id="+name+"&active="+status,
             dataType: 'json',
             method : 'POST',
             success: function( response ) {

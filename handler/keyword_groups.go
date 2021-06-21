@@ -5,7 +5,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"echoApp/model"
 	"net/http"
-	"log"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"strings"
 )
 
 func (h *Handler) ListKeywordGroups(c echo.Context) (err error) {
@@ -35,27 +36,17 @@ func (h *Handler) ChangeSubscriptionToKeywordGroup (c echo.Context) (err error) 
 }
 
 func (h *Handler) AddKeywordGroups(c echo.Context) (err error) {
-	log.Println("hello")
-
 	active := true
 	if c.FormValue("active") == "true" {
 		active = true
 	} else{
 		active = false
 	}
-	log.Println(c.FormValue("keywords[]"))
-
+	keywords := strings.Split(c.FormValue("keywords"), ",")
 	keyword_group := &model.KeywordGroup{
 		GroupName: c.FormValue("keyword_group"),
 		Active:active,
-	}
-
-	err = c.Bind(keyword_group)
-	if err != nil {
-		//place holder to render register page with error message
-		return c.Render(http.StatusOK, "create_keywords.tmpl", map[string]interface{}{
-			"Flash": "Something went wrong!! Please Try Again.",
-		})
+		Keywords:keywords,
 	}
 
 	err = h.KeywordGroupRepository.CreateKeywordGroup(keyword_group)
@@ -64,11 +55,30 @@ func (h *Handler) AddKeywordGroups(c echo.Context) (err error) {
 			"Flash": "Something went wrong!! Please Try Again.",
 		})
 	}
-
-	// services.SetSessionValue(c, "authenticated", true)
-	// services.SetSessionValue(c, "userName", user.Name)
-	// services.SetSessionValue(c, "userEmail", user.Email)
 	 c.Redirect(http.StatusSeeOther, "/keywords/add")
 
 	return nil
+}
+
+func (h *Handler) UpdateKeywordGroupsStatus(c echo.Context) (err error) {
+	active := false
+	id, err := primitive.ObjectIDFromHex(c.QueryParam("id"))
+	if err != nil {
+	panic(err)
+	}
+	if c.QueryParam("active") == "true" {
+		active = true
+	}
+
+	keyword_group := &model.KeywordGroup{
+		ID: id,
+		Active: !active,
+	}
+
+	err = h.KeywordGroupRepository.UpdateKeywordGroupStatus(keyword_group)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Something went wrong!! Please Try Again.")
+	}
+
+	return c.JSON(http.StatusOK, "Updated")
 }

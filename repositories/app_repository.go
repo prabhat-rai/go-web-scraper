@@ -35,9 +35,9 @@ func (appsRepository *AppRepository) CreateApp(u *model.Apps) (err error){
 	return nil
 }
 
-func (appsRepository *AppRepository) UpdateApp(u *model.Apps) (err error){
+func (appsRepository *AppRepository) UpdateAppStatus(u *model.Apps) (err error){
 	log.Println("hello")
-	filter := bson.D{{"name", u.Name}}
+	filter := bson.D{{"_id", u.ID}}
 	ctx := context.TODO()
 	operation := "$set"
 	appCollection := appsRepository.DB.Collection("apps")

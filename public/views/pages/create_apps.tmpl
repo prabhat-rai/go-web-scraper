@@ -8,21 +8,6 @@
 
 {{define "main"}}
 
-    <title>SB Admin 2 - </title>
-
-    <!-- Custom fonts for this template-->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-
-    <!-- Custom styles for this template-->
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
-
-</head>
-
-<body class="bg-gradient-primary">
-
     <div class="container">
 
         <div class="card o-hidden border-0 shadow-lg my-5">
@@ -46,7 +31,7 @@
 
                                     <label >
                                     Active? :
-                                        <input id="active" name="active" type="checkbox" class="fas fa-check btn btn-success btn-circle" value = true onchange="myFunction()" checked style="visibility:hidden;">
+                                        <input id="active" name="active" type="checkbox" class="fas fa-check btn btn-success btn-circle" value = true onchange="changeStatus()" checked style="visibility:hidden;">
                                            <span id="toggle" class="btn btn-success btn-circle"> <i id="toggle-icon" class="fas fa-check"></i></span>
                                         </input>
                                     </label>
@@ -86,7 +71,7 @@
     <script src="/static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
     <script>
-    function myFunction() {
+    function changeStatus() {
 
       if(document.getElementById('active').checked) {
          document.getElementById("toggle").className = "btn btn-success btn-circle"; 

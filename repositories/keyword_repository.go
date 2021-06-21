@@ -82,8 +82,6 @@ func (keywordRepo *KeywordRepository) RetrieveKeywords(dataTableFilters *service
 	return allKeywords
 }
 func (keywordRepo *KeywordRepository) CreateKeyword(u *model.Keyword) (err error) {
-	log.Println("hello")
-	u.Name = u.Name
 	keywordCollection := keywordRepo.DB.Collection("keywords")
 	dbContext := context.TODO()
 	result, err := keywordCollection.InsertOne(dbContext, u)
@@ -93,6 +91,22 @@ func (keywordRepo *KeywordRepository) CreateKeyword(u *model.Keyword) (err error
 	}
 
 	log.Println("Inserted Docs: ", result.InsertedID)
+	return nil
+}
+
+func (keywordRepo *KeywordRepository) UpdateKeywordStatus(u *model.Keyword) (err error){
+	filter := bson.D{{"_id", u.ID}}
+	ctx := context.TODO()
+	operation := "$set"
+	keywordCollection := keywordRepo.DB.Collection("keywords")
+	updateData := bson.M{operation: bson.M{"active": u.Active}}
+	updateResult, err := keywordCollection.UpdateOne(ctx, filter, updateData)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	log.Println("Updated Docs: ", updateResult)
 	return nil
 }
 

@@ -48,7 +48,6 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) *handler.Handler {
 	// Listing Routes
 	e.GET("/apps", h.AppsList, middlewares.Authenticated)
 	e.GET("/apps/add", h.CreateApps, middlewares.Authenticated)
-	e.POST("/apps/status", h.UpdateApps, middlewares.Authenticated)
 	e.POST("/apps/add", h.AddApps, middlewares.Authenticated)
 	e.GET("/reviews", h.ListReviews, middlewares.Authenticated)
 	e.GET("/keywords", h.ListKeywords, middlewares.Authenticated)
@@ -61,6 +60,9 @@ func registerRoutes(e *echo.Echo, client *mongo.Client) *handler.Handler {
 	e.GET("/ajax/reviews/list", h.RetrieveReviews, middlewares.Authenticated)
 	e.GET("/ajax/keywords/list", h.RetrieveKeywords, middlewares.Authenticated)
 	e.GET("/ajax/keyword-groups/list", h.RetrieveKeywordGroups, middlewares.Authenticated)
+	e.POST("/ajax/keywords/status", h.UpdateKeywordsStatus, middlewares.Authenticated)
+	e.POST("/ajax/keyword-groups/status", h.UpdateKeywordGroupsStatus, middlewares.Authenticated)
+	e.POST("/ajax/apps/status", h.UpdateAppsStatus, middlewares.Authenticated)
 
 
 	e.POST("/ajax/keyword-groups/change-subscription", h.ChangeSubscriptionToKeywordGroup, middlewares.Authenticated)
