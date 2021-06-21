@@ -246,7 +246,7 @@ func (appReviewRepo *AppReviewRepository) DateWiseReviews(groupByAttribute strin
 
 	reviewDateGroup = bson.M{
 		"$dateToString": bson.D{
-			{"format", "%d-%m-%Y"},
+			{"format", "%Y-%m-%d"},
 			{"date", "$review_date"},
 		},
 	}

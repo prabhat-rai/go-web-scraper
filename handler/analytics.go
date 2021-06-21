@@ -29,9 +29,7 @@ func (h *Handler) LoadAnalyticsCount(c echo.Context) (err error) {
 	platformWiseCountNew := services.GetKeyBasedCountForDailyBasis(platformWiseCount, "platform")
 
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		//"concept_old" : conceptWiseCount,
 		"concept" : conceptWiseCountNew,
-		//"platform_old" : platformWiseCount,
 		"platform" : platformWiseCountNew,
 		"noOfDays" : noOfDays + 1,
 	})

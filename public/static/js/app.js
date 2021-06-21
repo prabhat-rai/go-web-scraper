@@ -223,7 +223,75 @@ var webScrapperApp= {
     },
 
     loadAnalyticsData : function () {
+        let noOfDays = $('#noOfDays').val();
+        let dataForPlatformGraph = [];
+        let dataForConceptGraph = [];
+        let allConcepts = ["babyshop", "centrepoint", "homebox", "homecentre", "lifestyle", "max", "shoemart", "shukran", "splash"];
+        let allConceptLabels = ["Babyshop", "Centrepoint", "Homebox", "Homecentre", "Lifestyle", "Max", "Shoemart", "Shukran", "Splash"];
+        let conceptLineColors = [ '#2577B5', '#DD7CB5', '#FF1111', '#444444', '#111111' , '#222222', '#333333', '#666666', '#555555' ];
+        let allPlatforms = ['android', 'ios'];
+        let allPlatformLabels = ['Android', 'iOS'];
+        let platformLineColors = [ '#2577B5', '#DD7CB5' ];
+        $.ajax({
+            url: "/ajax/analytics/counts?days=" + noOfDays,
+            dataType: 'json',
+            method : 'GET',
+            success: function( response ) {
+                let dataObj = {"day" : ""};
 
+                $.each(allPlatforms, function (platformKey, platform) {
+                    dataObj[platform] = 0;
+                });
+
+                $.each(response.platform, function (date, values) {
+                    let currentDataObj = { ...dataObj };
+                    currentDataObj["day"] = date;
+
+                    $.each(values, function (platform, count) {
+                        currentDataObj[platform] = count;
+                    });
+
+                    dataForPlatformGraph.push(currentDataObj);
+                });
+
+                webScrapperApp.loadChart('platformAreaChart', dataForPlatformGraph, allPlatforms,
+                    allPlatformLabels, platformLineColors);
+
+                let conceptDataObj = {"day" : ""};
+                $.each(allConcepts, function (conceptKey, concept) {
+                    conceptDataObj[concept] = 0;
+                });
+
+                $.each(response.concept, function (date, values) {
+                    let currentDataObj = { ...conceptDataObj };
+                    currentDataObj["day"] = date;
+
+                    $.each(values, function (concept, count) {
+                        currentDataObj[concept] = count;
+                    });
+
+                    dataForConceptGraph.push(currentDataObj);
+                });
+
+                webScrapperApp.loadChart('conceptAreaChart', dataForConceptGraph, allConcepts,
+                    allConceptLabels, conceptLineColors);
+            }
+        });
+    },
+
+    loadChart : function (elementId, dataForGraph, yKeys, yLabels, lineColors) {
+        $("#" + elementId).empty();
+        // Line Chart statistics
+        Morris.Line({
+            element: elementId,
+            data: dataForGraph,
+            xkey: 'day',
+            ykeys: yKeys,
+            labels: yLabels,
+            pointSize: 2,
+            hideHover: 'auto',
+            lineColors: lineColors,
+        });
     }
 };
 
