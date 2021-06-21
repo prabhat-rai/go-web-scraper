@@ -232,6 +232,12 @@ var webScrapperApp= {
             method : 'POST',
             success: function( response ) {
                 utility.showNotification("Done" + 'd', 'text-success', 5, 'alert-info');
+
+                if( $( webScrapperApp.tableClassName ).length > 0 ) {
+                    $(webScrapperApp.tableClassName).DataTable().ajax.reload();
+                } else {
+                    window.location.reload();
+                }
             }
         });
 

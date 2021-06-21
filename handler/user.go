@@ -83,26 +83,16 @@ func (h *Handler) UpdateApps(c echo.Context) (err error) {
 
 	err = c.Bind(app)
 	if err != nil {
-		//place holder to render register page with error message
-		return c.Render(http.StatusOK, "apps_list.tmpl", map[string]interface{}{
-			"Flash": "Something went wrong!! Please Try Again.",
-		})
+		return c.JSON(http.StatusInternalServerError, "Something went wrong!! Please Try Again.")
 	}
+
 	err = h.AppRepository.UpdateApp(app)
 	if err != nil {
-		return c.Render(http.StatusOK, "apps_list.tmpl", map[string]interface{}{
-			"Flash": "Something went wrong!! Please Try Again.",
-		})
+		return c.JSON(http.StatusInternalServerError, "Something went wrong!! Please Try Again.")
 	}
 
-	userData := services.GetAuthenticatedUser(c)
-	appDetails := conf.GetAppsConfig(h.DB, false)
-	return c.Render(http.StatusOK, "apps_list.tmpl", map[string]interface{}{
-		"name": userData.Name,
-		"apps": appDetails.Apps,
-	})
 
-	return nil
+	return c.JSON(http.StatusOK, "Updated")
 }
 
 
