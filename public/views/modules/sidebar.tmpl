@@ -83,6 +83,7 @@
                 <span>Review Analysis</span></a>
         </li>
 
+{{if eq .role "admin"}}
         <!-- Divider -->
         <hr class="sidebar-divider">
 
@@ -101,16 +102,12 @@
             <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Normal User:</h6>
-                    <a class="collapse-item" href="#">List Users</a>
-                    <a class="collapse-item" href="#">Add User</a>
-                    <div class="collapse-divider"></div>
-                    <h6 class="collapse-header">Admin Users:</h6>
-                    <a class="collapse-item" href="#">List Admins</a>
-                    <a class="collapse-item" href="#">Add Admin</a>
+                    <a class="collapse-item" href="/listUsers">List Users</a>
+                    <a class="collapse-item" href="/addUser">Add User</a>
                 </div>
             </div>
         </li>
-
+{{end}}
         <!-- Divider -->
         <hr class="sidebar-divider d-none d-md-block">
 

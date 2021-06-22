@@ -1,13 +1,13 @@
 package handler
 
 import (
+	"echoApp/model"
 	"echoApp/services"
 	"github.com/labstack/echo/v4"
-	"echoApp/model"
-	"net/http"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"strings"
 	"log"
+	"net/http"
+	"strings"
 )
 
 func (h *Handler) ListKeywordGroups(c echo.Context) (err error) {
@@ -15,6 +15,7 @@ func (h *Handler) ListKeywordGroups(c echo.Context) (err error) {
 
 	return c.Render(http.StatusOK, "keyword_groups.tmpl", map[string]interface{}{
 		"name": userData.Name,
+		"role" : userData.Role,
 	})
 }
 
@@ -40,6 +41,7 @@ func (h *Handler) CreateKeywordGroups(c echo.Context) (err error) {
 	userData := services.GetAuthenticatedUser(c)
 	return c.Render(http.StatusOK, "create_keyword_groups.tmpl", map[string]interface{}{
 		"name": userData.Name,
+"role" : userData.Role,
 	})
 }
 
@@ -64,6 +66,7 @@ func (h *Handler) AddKeywordGroups(c echo.Context) (err error) {
 	userData := services.GetAuthenticatedUser(c)
 	return c.Render(http.StatusOK, "keyword_groups.tmpl", map[string]interface{}{
 		"name": userData.Name,
+"role" : userData.Role,
 		"message": "Keyword Group added successfully",
 	})
 

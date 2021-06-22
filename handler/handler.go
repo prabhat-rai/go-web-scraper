@@ -17,6 +17,7 @@ type (
 		Config *conf.Config
 	}
 )
+
 const (
 	// Key (Should come from somewhere else).
 	Key = "secret"

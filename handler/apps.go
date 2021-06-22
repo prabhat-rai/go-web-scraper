@@ -5,8 +5,8 @@ import (
 	"echoApp/model"
 	"echoApp/services"
 	"github.com/labstack/echo/v4"
-	"net/http"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"net/http"
 )
 
 func (h *Handler) AppsList(c echo.Context) (err error) {
@@ -14,6 +14,7 @@ func (h *Handler) AppsList(c echo.Context) (err error) {
 	appDetails := conf.GetAppsConfig(h.DB, false)
 	return c.Render(http.StatusOK, "apps_list.tmpl", map[string]interface{}{
 		"name": userData.Name,
+		"role" : userData.Role,
 		"apps": appDetails.Apps,
 	})
 }
@@ -22,6 +23,7 @@ func (h *Handler) CreateApps(c echo.Context) (err error) {
 	userData := services.GetAuthenticatedUser(c)
 	return c.Render(http.StatusOK, "create_apps.tmpl", map[string]interface{}{
 		"name": userData.Name,
+"role" : userData.Role,
 	})
 }
 func (h *Handler) AddApps(c echo.Context) (err error) {

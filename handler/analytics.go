@@ -12,6 +12,7 @@ func (h *Handler) LoadAnalyticsPage(c echo.Context) (err error) {
 
 	return c.Render(http.StatusOK, "analytics.tmpl", map[string]interface{}{
 		"name": userData.Name,
+		"role" : userData.Role,
 	})
 }
 

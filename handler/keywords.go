@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"echoApp/services"
 	"echoApp/model"
+	"echoApp/services"
 	"github.com/labstack/echo/v4"
-	"net/http"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
+	"net/http"
 )
 
 func (h *Handler) ListKeywords(c echo.Context) (err error) {
@@ -14,6 +14,7 @@ func (h *Handler) ListKeywords(c echo.Context) (err error) {
 
 	return c.Render(http.StatusOK, "keywords.tmpl", map[string]interface{}{
 		"name": userData.Name,
+		"role" : userData.Role,
 	})
 }
 
@@ -27,7 +28,8 @@ func (h *Handler) RetrieveKeywords(c echo.Context) (err error) {
 func (h *Handler) CreateKeywords(c echo.Context) (err error) {
 	userData := services.GetAuthenticatedUser(c)
 	return c.Render(http.StatusOK, "create_keywords.tmpl", map[string]interface{}{
-		"name": userData.Name,		
+		"name": userData.Name,
+		"role" : userData.Role,
 	})
 }
 
@@ -51,6 +53,7 @@ func (h *Handler) AddKeywords(c echo.Context) (err error) {
 	return c.Render(http.StatusOK, "keywords.tmpl", map[string]interface{}{
 		"message": "Keyword added successfully",
 		"name": userData.Name,
+"role" : userData.Role,
 	})
 
 	return nil
