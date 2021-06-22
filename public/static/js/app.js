@@ -246,6 +246,7 @@ var webScrapperApp= {
             dataType: 'json',
             method : 'POST',
             success: function( response ) {
+                utility.showNotification("Updated active status!", 'text-success', 5, 'alert-info');
                 if( $( webScrapperApp.tableClassName ).length > 0 ) {
                     $(webScrapperApp.tableClassName).DataTable().ajax.reload();
                 } else {
