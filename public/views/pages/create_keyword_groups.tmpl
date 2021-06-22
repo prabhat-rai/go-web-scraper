@@ -1,0 +1,74 @@
+{{template "app" .}}
+{{define "title"}}Keyword Groups{{end}}
+{{define "header_js_css"}}
+    <!-- Custom styles for this page -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+{{end}}
+
+
+{{define "main"}}
+
+    <div class="container">
+
+        <div class="card o-hidden border-0 shadow-lg my-5">
+            <div class="card-body p-0">
+                <!-- Nested Row within Card Body -->
+                <div class="row">
+                 <div class="col-lg-2"></div>
+                    <div class="col-lg-8">
+                        <div class="p-5">
+                            
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">Add Keyword Group!</h1>
+                            </div>
+                            <form action="/keyword-groups/add" method="POST"  class="user">
+                                <div class="form-group row" novalidate>
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <input name="keyword_group" type="text" class="form-control form-control-user" id="exampleFirstName"
+                                            placeholder="Keyword Group" required>
+                                    </div>
+                                 <div class="col-sm-6">
+                                    <label >
+                                    Active? :
+                                        <input id="active" name="active" type="checkbox" class="fas fa-check btn btn-success btn-circle" value = true onchange="webScrapperApp.changeStatus()" checked style="visibility:hidden;">
+                                           <span id="toggle" class="btn btn-success btn-circle"> <i id="toggle-icon" class="fas fa-check"></i></span>
+                                        </input>
+                                    </label>
+                                    </div>
+                                    </div>
+                            <div class="form-group row" novalidate>
+                            <div class="col-sm-12 mb-3 mb-sm-0">
+                                     Keywords:
+                              <select id="keywordGroupSelect" class="ratings-filter select2-dropdown form-control form-control-user" data-filter-on="keyword_groups" onchange="webScrapperApp.getKeywords()" required
+                                    data-url="/ajax/keyword-groups/list" data-text-key="group_name" style="width: 200px; height: 33px" multiple>
+                                <option value="">-Group-</option>
+                                {{range .keyword_groups}}
+                                    <option value="{{.}}">{{.}}</option>
+                                {{end}}
+                            </select>
+                                        
+                                    </div>
+                                </div>
+                                <input style="visibility:hidden;" name="keywords" type="text" id="keyword-list"></input>
+                                 <button type="submit" class="btn btn-primary btn-user btn-block"> Submit </button>
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                      <hr>
+                </div>
+              
+            </div>
+            <div class="col-lg-2"></div>
+        </div>
+
+    </div>
+
+{{end}}
+
+{{define "footer_js_css"}}
+    <!-- Page level plugins -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+{{end}}
