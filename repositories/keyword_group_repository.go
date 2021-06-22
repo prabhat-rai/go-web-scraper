@@ -184,3 +184,32 @@ func (keywordGroupRepo *KeywordGroupRepository) GetGroupsWithActiveSubscribers()
 
 	return allKeywordGroups
 }
+
+func (keywordGroupRepo *KeywordGroupRepository) CreateKeywordGroup(u *model.KeywordGroup) (err error) {
+	keywordCollection := keywordGroupRepo.DB.Collection("keyword_groups")
+	dbContext := context.TODO()
+	result, err := keywordCollection.InsertOne(dbContext, u)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	log.Println("Inserted Docs: ", result.InsertedID)
+	return nil
+}
+
+func (keywordGroupRepo *KeywordGroupRepository) UpdateActiveStatus(u *model.KeywordGroup) (err error) {
+	filter := bson.D{{"_id", u.ID}}
+	ctx := context.TODO()
+	operation := "$set"
+	keywordGroupCollection := keywordGroupRepo.DB.Collection("keyword_groups")
+	updateData := bson.M{operation: bson.M{"active": u.Active}}
+	updateResult, err := keywordGroupCollection.UpdateOne(ctx, filter, updateData)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	log.Println("Updated Docs: ", updateResult)
+	return nil
+}

@@ -11,6 +11,11 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Keywords</h1>
     </div>
+    {{with .message}}
+    <div class="alert alert-success">
+    <strong>Success!</strong> {{.}}
+  </div>
+  {{end}}
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
@@ -21,8 +26,8 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered data-table-list" id="reviewListDataTable" data-status-columns="1"
-                       data-url="/ajax/keywords/list" width="100%" cellspacing="0">
+                <table class="table table-bordered data-table-list" id="keywordListDataTable" data-status-columns="1"
+                       data-url="/ajax/keywords/list" width="100%" cellspacing="0" data-entity="keywords">
                     <thead>
                         <tr>
                             <th data-dt-name="name" data-dt-query="name">Name</th>

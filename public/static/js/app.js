@@ -146,11 +146,29 @@ var webScrapperApp= {
                     },
                     {
                         targets: columnListForStatus.map(Number),
-                        render: function(cellData) {
+                        render: function(cellData, type, row) {
+                            let entity = $('.data-table-list').first().attr('data-entity');
+                            let active = false;
+                            let attributeId = row.id;
+
+                            if(row.active) {
+                                active = true;
+                            }
+
                             if (cellData === true) {
-                                return "<a href='#' class='btn btn-success btn-circle'><i class='fas fa-check'></i></a>";
+                                return '<label><input id="active" name="active" type="checkbox" class="fas fa-check btn btn-success btn-circle" ' +
+                                    'onchange="webScrapperApp.changeActiveStatus(\'' + entity + '\',\'' + attributeId + '\',' + active + ')" ' +
+                                    'checked style="visibility:hidden;">' +
+                                        '<span id="active-toggle" class="btn btn-success btn-circle"> ' +
+                                        '<i id="active-toggle-icon" class="fas fa-check"></i>' +
+                                    '</span></input></label>';
                             } else {
-                                return "<a href='#' class='btn btn-danger btn-circle'><i class='fas fa-times'></i></a>";
+                                return '<label><input id="inactive" name="active" type="checkbox"  class="fas fa-check btn btn-danger btn-circle" ' +
+                                    'onchange="webScrapperApp.changeActiveStatus(\'' + entity + '\',\'' + attributeId + '\',' + active + ')" ' +
+                                    'style="visibility:hidden;" checked>' +
+                                        '<span id="inactive-toggle" class="btn btn-danger btn-circle"> ' +
+                                            '<i id="inactive-toggle-icon" class="fas fa-times"></i>' +
+                                    '</span></input></label>';
                             }
                         }
                     },
@@ -220,6 +238,41 @@ var webScrapperApp= {
                 }
             }
         });
+    },
+
+    changeActiveStatus : function (type, name,status) {
+        $.ajax({
+            url: "/ajax/" + type + "/status?id="+name+"&active="+!status,
+            dataType: 'json',
+            method : 'POST',
+            success: function( response ) {
+                utility.showNotification("Updated active status!", 'text-success', 5, 'alert-info');
+                if( $( webScrapperApp.tableClassName ).length > 0 ) {
+                    $(webScrapperApp.tableClassName).DataTable().ajax.reload();
+                } else {
+                    window.location.reload();
+                }
+            }
+        });
+
+    },
+
+    changeStatus : function () {
+
+        if(document.getElementById('active').checked) {
+           document.getElementById("toggle").className = "btn btn-success btn-circle"; 
+           document.getElementById('active').value = true;
+           document.getElementById("toggle-icon").className = "fas fa-check"
+           
+      } else {
+          document.getElementById("toggle").className = "btn btn-danger btn-circle"; 
+          document.getElementById('active').value = false;
+          document.getElementById("toggle-icon").className = "fas fa-times"
+      }
+      },
+
+    getKeywords: function () {
+        $("#keyword-list").val($("#keywordGroupSelect").val())
     }
 };
 

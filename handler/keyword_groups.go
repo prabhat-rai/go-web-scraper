@@ -3,7 +3,11 @@ package handler
 import (
 	"echoApp/services"
 	"github.com/labstack/echo/v4"
+	"echoApp/model"
 	"net/http"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"strings"
+	"log"
 )
 
 func (h *Handler) ListKeywordGroups(c echo.Context) (err error) {
@@ -30,4 +34,61 @@ func (h *Handler) ChangeSubscriptionToKeywordGroup (c echo.Context) (err error) 
 
 	result := h.KeywordGroupRepository.UpdateSubscriptionForUser(keyGroupId, subscriptionStatus, userData.Email)
 	return c.JSON(http.StatusOK, result)
+}
+
+func (h *Handler) CreateKeywordGroups(c echo.Context) (err error) {
+	userData := services.GetAuthenticatedUser(c)
+	return c.Render(http.StatusOK, "create_keyword_groups.tmpl", map[string]interface{}{
+		"name": userData.Name,
+	})
+}
+
+func (h *Handler) AddKeywordGroups(c echo.Context) (err error) {
+	active := true
+	if c.FormValue("active") == "true" {
+		active = true
+	}
+	keywords := strings.Split(c.FormValue("keywords"), ",")
+	keyword_group := &model.KeywordGroup{
+		GroupName: c.FormValue("keyword_group"),
+		Active:active,
+		Keywords:keywords,
+	}
+
+	err = h.KeywordGroupRepository.CreateKeywordGroup(keyword_group)
+	if err != nil {
+		return c.Render(http.StatusOK, "create_keyword_groups.tmpl", map[string]interface{}{
+			"Flash": "Something went wrong!! Please Try Again.",
+		})
+	}
+	userData := services.GetAuthenticatedUser(c)
+	return c.Render(http.StatusOK, "keyword_groups.tmpl", map[string]interface{}{
+		"name": userData.Name,
+		"message": "Keyword Group added successfully",
+	})
+
+	return nil
+}
+
+func (h *Handler) UpdateKeywordGroupsStatus(c echo.Context) (err error) {
+	active := false
+	id, err := primitive.ObjectIDFromHex(c.QueryParam("id"))
+	if err != nil {
+	log.Fatal(err)
+	}
+	if c.QueryParam("active") == "true" {
+		active = true
+	}
+
+	keyword_group := &model.KeywordGroup{
+		ID: id,
+		Active: active,
+	}
+
+	err = h.KeywordGroupRepository.UpdateActiveStatus(keyword_group)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Something went wrong!! Please Try Again.")
+	}
+
+	return c.JSON(http.StatusOK, "Updated")
 }

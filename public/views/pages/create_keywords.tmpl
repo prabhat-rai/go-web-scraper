@@ -1,0 +1,57 @@
+{{template "app" .}}
+{{define "title"}}Keywords{{end}}
+{{define "header_js_css"}}
+    <!-- Custom styles for this page -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+{{end}}
+
+
+{{define "main"}}
+
+    <div class="container">
+
+        <div class="card o-hidden border-0 shadow-lg my-5">
+            <div class="card-body p-0">
+                <!-- Nested Row within Card Body -->
+                <div class="row">
+                 <div class="col-lg-2"></div>
+                    <div class="col-lg-8">
+                        <div class="p-5">
+                            <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">Add Keyword!</h1>
+                            </div>
+                            <form action="/keywords/add" method="POST"  class="user">
+                                <div class="form-group row" novalidate>
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <input name="keyword_name" type="text" class="form-control form-control-user" id="exampleFirstName"
+                                            placeholder="Keyword Name" required>
+                                    </div>
+                                    <div class="col-sm-6">
+                                    <label >
+                                    Active? :
+                                        <input id="active" name="active" type="checkbox" class="fas fa-check btn btn-success btn-circle" value = true onchange="webScrapperApp.changeStatus()" checked style="visibility:hidden;">
+                                           <span id="toggle" class="btn btn-success btn-circle"> <i id="toggle-icon" class="fas fa-check"></i></span>
+                                        </input>
+                                    </label>
+                                        
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary btn-user btn-block"> Submit
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+            </div>
+            <div class="col-lg-2"></div>
+        </div>
+
+    </div>
+
+{{end}}
+
+{{define "footer_js_css"}}
+    <!-- Page level plugins -->
+{{end}}

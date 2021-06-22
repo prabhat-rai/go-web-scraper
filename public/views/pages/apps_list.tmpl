@@ -11,6 +11,11 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Applications</h1>
     </div>
+    {{with .message}}
+    <div class="alert alert-success">
+    <strong>Success!</strong> {{.}}
+  </div>
+  {{end}}
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
@@ -46,14 +51,19 @@
                                 <td>{{.IosAppId}}</td>
                                 <td>
                                     {{if .Active}}
-                                        <a href="#" class="btn btn-success btn-circle">
-                                            <i class="fas fa-check"></i>
-                                        </a>
+                                         <label>
+                                        <input id="active" name="active" type="checkbox" class="fas fa-check btn btn-success btn-circle" value = true onchange="webScrapperApp.changeActiveStatus('apps', {{.ID}},{{.Active}})" checked style="visibility:hidden;">
+                                           <span id="active-toggle" class="btn btn-success btn-circle"> <i id="active-toggle-icon" class="fas fa-check"></i></span>
+                                        </input>
+                                    </label>
                                     {{else}}
-                                        <a href="#" class="btn btn-danger btn-circle">
-                                            <i class="fas fa-times"></i>
-                                        </a>
+                                         <label>
+                                     <input id="inactive" name="active" type="checkbox"  class="fas fa-check btn btn-danger btn-circle" value = "" onchange="webScrapperApp.changeActiveStatus('apps', {{.ID}},{{.Active}})" style="visibility:hidden;" checked>
+                                           <span id="inactive-toggle" class="btn btn-danger btn-circle"> <i id="inactive-toggle-icon" class="fas fa-times"></i></span>
+                                        </input>
+                                    </label>
                                     {{end}}
+                                   
                                 </td>
                                 <td>
                                     <div class="dropdown mb-4">
