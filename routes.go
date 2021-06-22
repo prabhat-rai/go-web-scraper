@@ -22,6 +22,9 @@ func registerRoutes(e *echo.Echo, client *mongo.Client,dbName string) *handler.H
 		AppReviewRepository: &repositories.AppReviewRepository{
 			DB: database,
 		},
+		AppRepository: &repositories.AppRepository{
+			DB: database,
+		},
 		KeywordRepository: &repositories.KeywordRepository{
 			DB: database,
 		},
@@ -42,15 +45,24 @@ func registerRoutes(e *echo.Echo, client *mongo.Client,dbName string) *handler.H
 
 	// Listing Routes
 	e.GET("/apps", h.AppsList, middlewares.Authenticated)
+	e.GET("/apps/add", h.CreateApps, middlewares.Authenticated)
+	e.POST("/apps/add", h.AddApps, middlewares.Authenticated)
 	e.GET("/reviews", h.ListReviews, middlewares.Authenticated)
 	e.GET("/keywords", h.ListKeywords, middlewares.Authenticated)
+	e.GET("/keywords/add", h.CreateKeywords, middlewares.Authenticated)
+	e.GET("/keyword-groups/add", h.CreateKeywordGroups, middlewares.Authenticated)
+	e.POST("/keywords/add", h.AddKeywords, middlewares.Authenticated)
 	e.GET("/keyword-groups", h.ListKeywordGroups, middlewares.Authenticated)
 	e.GET("/analytics", h.LoadAnalyticsPage, middlewares.Authenticated)
+	e.POST("/keyword-groups/add", h.AddKeywordGroups, middlewares.Authenticated)
 
 	// AJAX listing Routes
 	e.GET("/ajax/reviews/list", h.RetrieveReviews, middlewares.Authenticated)
 	e.GET("/ajax/keywords/list", h.RetrieveKeywords, middlewares.Authenticated)
 	e.GET("/ajax/keyword-groups/list", h.RetrieveKeywordGroups, middlewares.Authenticated)
+	e.POST("/ajax/keywords/status", h.UpdateKeywordsStatus, middlewares.Authenticated)
+	e.POST("/ajax/keyword-groups/status", h.UpdateKeywordGroupsStatus, middlewares.Authenticated)
+	e.POST("/ajax/apps/status", h.UpdateAppsStatus, middlewares.Authenticated)
 
 
 	e.POST("/ajax/keyword-groups/change-subscription", h.ChangeSubscriptionToKeywordGroup, middlewares.Authenticated)

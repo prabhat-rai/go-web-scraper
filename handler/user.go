@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"echoApp/conf"
 	"echoApp/model"
 	"echoApp/services"
 	"github.com/labstack/echo/v4"
@@ -29,14 +28,6 @@ func (h *Handler) Home(c echo.Context) (err error) {
 	})
 }
 
-func (h *Handler) AppsList(c echo.Context) (err error) {
-	userData := services.GetAuthenticatedUser(c)
-	appDetails := conf.GetAppsConfig(h.DB, false)
-	return c.Render(http.StatusOK, "apps_list.tmpl", map[string]interface{}{
-		"name": userData.Name,
-		"apps": appDetails.Apps,
-	})
-}
 
 func (h *Handler) LoginForm(c echo.Context) (err error) {
 	return c.Render(http.StatusOK, "login.tmpl", map[string]interface{}{

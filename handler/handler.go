@@ -11,6 +11,7 @@ type (
 		DB *mongo.Database
 		UserRepository *repositories.UserRepository
 		AppReviewRepository *repositories.AppReviewRepository
+		AppRepository *repositories.AppRepository
 		KeywordRepository *repositories.KeywordRepository
 		KeywordGroupRepository *repositories.KeywordGroupRepository
 		Config *conf.Config

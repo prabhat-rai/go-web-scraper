@@ -80,6 +80,36 @@ func (keywordRepo *KeywordRepository) RetrieveKeywords(dataTableFilters *service
 	if allKeywords.Data == nil {
 		allKeywords.Data = make([]model.Keyword, 0)
 	}
-
 	return allKeywords
 }
+func (keywordRepo *KeywordRepository) CreateKeyword(u *model.Keyword) (err error) {
+	keywordCollection := keywordRepo.DB.Collection("keywords")
+	dbContext := context.TODO()
+	result, err := keywordCollection.InsertOne(dbContext, u)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	log.Println("Inserted Docs: ", result.InsertedID)
+	return nil
+}
+
+func (keywordRepo *KeywordRepository) UpdateActiveStatus(u *model.Keyword) (err error){
+	filter := bson.D{{"_id", u.ID}}
+	ctx := context.TODO()
+	operation := "$set"
+	keywordCollection := keywordRepo.DB.Collection("keywords")
+	updateData := bson.M{operation: bson.M{"active": u.Active}}
+	updateResult, err := keywordCollection.UpdateOne(ctx, filter, updateData)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	log.Println("Updated Docs: ", updateResult)
+	return nil
+}
+
+
+
