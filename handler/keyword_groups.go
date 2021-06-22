@@ -35,12 +35,17 @@ func (h *Handler) ChangeSubscriptionToKeywordGroup (c echo.Context) (err error) 
 	return c.JSON(http.StatusOK, result)
 }
 
+func (h *Handler) CreateKeywordGroups(c echo.Context) (err error) {
+	userData := services.GetAuthenticatedUser(c)
+	return c.Render(http.StatusOK, "create_keyword_groups.tmpl", map[string]interface{}{
+		"name": userData.Name,
+	})
+}
+
 func (h *Handler) AddKeywordGroups(c echo.Context) (err error) {
 	active := true
 	if c.FormValue("active") == "true" {
 		active = true
-	} else{
-		active = false
 	}
 	keywords := strings.Split(c.FormValue("keywords"), ",")
 	keyword_group := &model.KeywordGroup{
@@ -55,7 +60,11 @@ func (h *Handler) AddKeywordGroups(c echo.Context) (err error) {
 			"Flash": "Something went wrong!! Please Try Again.",
 		})
 	}
-	 c.Redirect(http.StatusSeeOther, "/keywords/add")
+	userData := services.GetAuthenticatedUser(c)
+	return c.Render(http.StatusOK, "keyword_groups.tmpl", map[string]interface{}{
+		"name": userData.Name,
+		"message": "Keyword Group added successfully",
+	})
 
 	return nil
 }

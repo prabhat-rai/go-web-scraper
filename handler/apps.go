@@ -28,8 +28,6 @@ func (h *Handler) AddApps(c echo.Context) (err error) {
 	active := false
 	if c.FormValue("active") == "true" {
 		active = true
-	} else{
-		active = false
 	}
 	app := &model.Apps{
 		Name: c.FormValue("app_name"),
@@ -45,7 +43,11 @@ func (h *Handler) AddApps(c echo.Context) (err error) {
 		})
 	}
 
-	 c.Redirect(http.StatusSeeOther, "/apps/add")
+	appDetails := conf.GetAppsConfig(h.DB, false)
+	return c.Render(http.StatusOK, "apps_list.tmpl", map[string]interface{}{
+		"apps": appDetails.Apps,
+		"message": "App successfully created!",
+	})
 
 	return nil
 }

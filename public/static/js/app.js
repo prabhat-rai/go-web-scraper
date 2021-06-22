@@ -256,6 +256,24 @@ var webScrapperApp= {
             }
         });
 
+    },
+
+    changeStatus : function () {
+
+        if(document.getElementById('active').checked) {
+           document.getElementById("toggle").className = "btn btn-success btn-circle"; 
+           document.getElementById('active').value = true;
+           document.getElementById("toggle-icon").className = "fas fa-check"
+           
+      } else {
+          document.getElementById("toggle").className = "btn btn-danger btn-circle"; 
+          document.getElementById('active').value = false;
+          document.getElementById("toggle-icon").className = "fas fa-times"
+      }
+      },
+
+    getKeywords: function () {
+        $("#keyword-list").val($("#keywordGroupSelect").val())
     }
 };
 

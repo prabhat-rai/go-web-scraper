@@ -50,6 +50,7 @@ func registerRoutes(e *echo.Echo, client *mongo.Client,dbName string) *handler.H
 	e.GET("/reviews", h.ListReviews, middlewares.Authenticated)
 	e.GET("/keywords", h.ListKeywords, middlewares.Authenticated)
 	e.GET("/keywords/add", h.CreateKeywords, middlewares.Authenticated)
+	e.GET("/keyword-groups/add", h.CreateKeywordGroups, middlewares.Authenticated)
 	e.POST("/keywords/add", h.AddKeywords, middlewares.Authenticated)
 	e.GET("/keyword-groups", h.ListKeywordGroups, middlewares.Authenticated)
 	e.POST("/keyword-groups/add", h.AddKeywordGroups, middlewares.Authenticated)

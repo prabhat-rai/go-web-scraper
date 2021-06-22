@@ -2,7 +2,6 @@
 {{define "title"}}Add Apps{{end}}
 {{define "header_js_css"}}
     <!-- Custom styles for this page -->
-    <link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 {{end}}
 
 
@@ -31,7 +30,7 @@
 
                                     <label >
                                     Active? :
-                                        <input id="active" name="active" type="checkbox" class="fas fa-check btn btn-success btn-circle" value = true onchange="changeStatus()" checked style="visibility:hidden;">
+                                        <input id="active" name="active" type="checkbox" class="fas fa-check btn btn-success btn-circle" value = true onchange="webScrapperApp.changeStatus()" checked style="visibility:hidden;">
                                            <span id="toggle" class="btn btn-success btn-circle"> <i id="toggle-icon" class="fas fa-check"></i></span>
                                         </input>
                                     </label>
@@ -67,22 +66,4 @@
 
 {{define "footer_js_css"}}
     <!-- Page level plugins -->
-    <script src="/static/vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="/static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-    <script>
-    function changeStatus() {
-
-      if(document.getElementById('active').checked) {
-         document.getElementById("toggle").className = "btn btn-success btn-circle"; 
-         document.getElementById('active').value = true;
-         document.getElementById("toggle-icon").className = "fas fa-check"
-         
-    } else {
-        document.getElementById("toggle").className = "btn btn-danger btn-circle"; 
-        document.getElementById('active').value = false;
-        document.getElementById("toggle-icon").className = "fas fa-times"
-    }
-    }
-</script>
 {{end}}

@@ -21,8 +21,6 @@ type (
 
 
 func (appsRepository *AppRepository) CreateApp(u *model.Apps) (err error){
-	log.Println("hello")
-	u.Name = u.Name
 	appCollection := appsRepository.DB.Collection("apps")
 	dbContext := context.TODO()
 	result, err := appCollection.InsertOne(dbContext, u)
@@ -36,7 +34,6 @@ func (appsRepository *AppRepository) CreateApp(u *model.Apps) (err error){
 }
 
 func (appsRepository *AppRepository) UpdateAppStatus(u *model.Apps) (err error){
-	log.Println("hello")
 	filter := bson.D{{"_id", u.ID}}
 	ctx := context.TODO()
 	operation := "$set"
