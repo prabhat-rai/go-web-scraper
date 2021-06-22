@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"strings"
+	"log"
 )
 
 func (h *Handler) ListKeywordGroups(c echo.Context) (err error) {
@@ -56,7 +57,7 @@ func (h *Handler) AddKeywordGroups(c echo.Context) (err error) {
 
 	err = h.KeywordGroupRepository.CreateKeywordGroup(keyword_group)
 	if err != nil {
-		return c.Render(http.StatusOK, "register.tmpl", map[string]interface{}{
+		return c.Render(http.StatusOK, "create_keyword_groups.tmpl", map[string]interface{}{
 			"Flash": "Something went wrong!! Please Try Again.",
 		})
 	}
@@ -73,7 +74,7 @@ func (h *Handler) UpdateKeywordGroupsStatus(c echo.Context) (err error) {
 	active := false
 	id, err := primitive.ObjectIDFromHex(c.QueryParam("id"))
 	if err != nil {
-	panic(err)
+	log.Fatal(err)
 	}
 	if c.QueryParam("active") == "true" {
 		active = true
@@ -81,10 +82,10 @@ func (h *Handler) UpdateKeywordGroupsStatus(c echo.Context) (err error) {
 
 	keyword_group := &model.KeywordGroup{
 		ID: id,
-		Active: !active,
+		Active: active,
 	}
 
-	err = h.KeywordGroupRepository.UpdateKeywordGroupStatus(keyword_group)
+	err = h.KeywordGroupRepository.UpdateActiveStatus(keyword_group)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "Something went wrong!! Please Try Again.")
 	}

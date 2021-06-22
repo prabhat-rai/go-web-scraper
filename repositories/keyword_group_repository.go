@@ -198,7 +198,7 @@ func (keywordGroupRepo *KeywordGroupRepository) CreateKeywordGroup(u *model.Keyw
 	return nil
 }
 
-func (keywordGroupRepo *KeywordGroupRepository) UpdateKeywordGroupStatus(u *model.KeywordGroup) (err error) {
+func (keywordGroupRepo *KeywordGroupRepository) UpdateActiveStatus(u *model.KeywordGroup) (err error) {
 	filter := bson.D{{"_id", u.ID}}
 	ctx := context.TODO()
 	operation := "$set"

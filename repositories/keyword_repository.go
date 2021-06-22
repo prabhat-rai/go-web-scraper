@@ -95,7 +95,7 @@ func (keywordRepo *KeywordRepository) CreateKeyword(u *model.Keyword) (err error
 	return nil
 }
 
-func (keywordRepo *KeywordRepository) UpdateKeywordStatus(u *model.Keyword) (err error){
+func (keywordRepo *KeywordRepository) UpdateActiveStatus(u *model.Keyword) (err error){
 	filter := bson.D{{"_id", u.ID}}
 	ctx := context.TODO()
 	operation := "$set"

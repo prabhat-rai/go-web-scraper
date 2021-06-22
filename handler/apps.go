@@ -61,10 +61,10 @@ func (h *Handler) UpdateAppsStatus(c echo.Context) (err error) {
 
 	app := &model.Apps{
 		ID: id,
-		Active: !active,
+		Active: active,
 	}
 
-	err = h.AppRepository.UpdateAppStatus(app)
+	err = h.AppRepository.UpdateActiveStatus(app)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "Something went wrong!! Please Try Again.")
 	}

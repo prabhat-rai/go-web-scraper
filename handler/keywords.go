@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"log"
 )
 
 func (h *Handler) ListKeywords(c echo.Context) (err error) {
@@ -42,7 +43,7 @@ func (h *Handler) AddKeywords(c echo.Context) (err error) {
 
 	err = h.KeywordRepository.CreateKeyword(keyword)
 	if err != nil {
-		return c.Render(http.StatusOK, "register.tmpl", map[string]interface{}{
+		return c.Render(http.StatusOK, "create_keywords.tmpl", map[string]interface{}{
 			"Flash": "Something went wrong!! Please Try Again.",
 		})
 	}
@@ -59,7 +60,7 @@ func (h *Handler) UpdateKeywordsStatus(c echo.Context) (err error) {
 	active := false
 	id, err := primitive.ObjectIDFromHex(c.QueryParam("id"))
 	if err != nil {
-	panic(err)
+	log.Fatal(err)
 	}
 	if c.QueryParam("active") == "true" {
 		active = true
@@ -67,10 +68,10 @@ func (h *Handler) UpdateKeywordsStatus(c echo.Context) (err error) {
 
 	keyword := &model.Keyword{
 		ID: id,
-		Active: !active,
+		Active: active,
 	}
 
-	err = h.KeywordRepository.UpdateKeywordStatus(keyword)
+	err = h.KeywordRepository.UpdateActiveStatus(keyword)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "Something went wrong!! Please Try Again.")
 	}

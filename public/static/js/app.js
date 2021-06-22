@@ -242,12 +242,10 @@ var webScrapperApp= {
 
     changeActiveStatus : function (type, name,status) {
         $.ajax({
-            url: "/ajax/" + type + "/status?id="+name+"&active="+status,
+            url: "/ajax/" + type + "/status?id="+name+"&active="+!status,
             dataType: 'json',
             method : 'POST',
             success: function( response ) {
-                utility.showNotification("Done" + 'd', 'text-success', 5, 'alert-info');
-
                 if( $( webScrapperApp.tableClassName ).length > 0 ) {
                     $(webScrapperApp.tableClassName).DataTable().ajax.reload();
                 } else {

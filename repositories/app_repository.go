@@ -33,7 +33,7 @@ func (appsRepository *AppRepository) CreateApp(u *model.Apps) (err error){
 	return nil
 }
 
-func (appsRepository *AppRepository) UpdateAppStatus(u *model.Apps) (err error){
+func (appsRepository *AppRepository) UpdateActiveStatus(u *model.Apps) (err error){
 	filter := bson.D{{"_id", u.ID}}
 	ctx := context.TODO()
 	operation := "$set"
