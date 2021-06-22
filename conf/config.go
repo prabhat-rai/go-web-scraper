@@ -25,6 +25,7 @@ type (
 		Port 		string `mapstructure:"MAIL_PORT"`
 		User  		string `mapstructure:"MAIL_USER"`
 		Password 	string `mapstructure:"MAIL_PASSWORD"`
+		SendMail	string `mapstructure:"SEND_MAIL"`
 	}
 
 	ConfigProps struct {

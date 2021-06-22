@@ -1,0 +1,62 @@
+{{template "app" .}}
+{{define "title"}}List{{end}}
+{{define "header_js_css"}}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+{{end}}
+
+
+{{define "main"}}
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800" id="specific_page_method" data-page="analytics">Analytics</h1>
+        <div class="float-right">
+            <label for="noOfDays">Load Data for </label>
+            <select id="noOfDays" onchange="webScrapperApp.loadAnalyticsData()">
+                <option value="7" selected="selected">7 Days</option>
+                <option value="15">15 Days</option>
+                <option value="30">30 Days</option>
+                <option value="45">45 Days</option>
+                <option value="60">60 Days</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-xl-12 col-lg-12">
+
+            <!-- Area Chart -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Platform wise Reviews</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <div id="platformAreaChart" style="height: 250px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-12 col-lg-12">
+
+            <!-- Area Chart -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Concept wise Reviews</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <div id="conceptAreaChart" style="height: 250px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{{end}}
+
+{{define "footer_js_css"}}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+{{end}}

@@ -53,6 +53,7 @@ func registerRoutes(e *echo.Echo, client *mongo.Client,dbName string) *handler.H
 	e.GET("/keyword-groups/add", h.CreateKeywordGroups, middlewares.Authenticated)
 	e.POST("/keywords/add", h.AddKeywords, middlewares.Authenticated)
 	e.GET("/keyword-groups", h.ListKeywordGroups, middlewares.Authenticated)
+	e.GET("/analytics", h.LoadAnalyticsPage, middlewares.Authenticated)
 	e.POST("/keyword-groups/add", h.AddKeywordGroups, middlewares.Authenticated)
 
 	// AJAX listing Routes
@@ -66,6 +67,8 @@ func registerRoutes(e *echo.Echo, client *mongo.Client,dbName string) *handler.H
 
 	e.POST("/ajax/keyword-groups/change-subscription", h.ChangeSubscriptionToKeywordGroup, middlewares.Authenticated)
 	e.GET("/ajax/reviews/fetch", h.FetchReview, middlewares.Authenticated)
+	e.GET("/ajax/dashboard/counts", h.GetDashboardCount, middlewares.Authenticated)
+	e.GET("/ajax/analytics/counts", h.LoadAnalyticsCount, middlewares.Authenticated)
 
 	// Dev Test Routes
 	e.GET("/dev-test/verify-mongodb-queries", h.VerifyMongoDbQueries, middlewares.Authenticated)

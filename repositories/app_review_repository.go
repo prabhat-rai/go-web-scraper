@@ -194,20 +194,91 @@ func (appReviewRepo *AppReviewRepository) GetReviewsWithMatchingKeywords(keyword
 }
 
 //group by count
-func (appReviewRepo *AppReviewRepository) CountReviews(collection string, groupbyattr string, days int) []bson.M {
-	reviewCollection := appReviewRepo.DB.Collection(collection)
+func (appReviewRepo *AppReviewRepository) CountReviews(groupByAttribute string, difference int, differenceIn string) []bson.M {
+	var workingTime primitive.Timestamp
 	dbContext := context.TODO()
-	workingTime := time.Now().AddDate(0,0,-days)
-	matchStage := bson.D{{"$match", bson.D{{"review_date", bson.D{{"$gt",workingTime.String()}}}}}}
-	groupStage := bson.D{{"$group", bson.D{{"_id", groupbyattr}, {"count", bson.D{{"$sum", 1}}}}}}
+	reviewCollection := appReviewRepo.DB.Collection("app_reviews")
+
+	switch differenceIn {
+		case "months":
+			workingTime = primitive.Timestamp{T:uint32(time.Now().AddDate(0,-difference,0).Unix())}
+		case "years":
+			workingTime = primitive.Timestamp{T:uint32(time.Now().AddDate(-difference,0,0).Unix())}
+		case "days":
+			workingTime = primitive.Timestamp{T:uint32(time.Now().AddDate(0,0,-difference).Unix())}
+		default:
+			fmt.Println("Unknown difference type encountered, switching to days")
+			workingTime = primitive.Timestamp{T:uint32(time.Now().AddDate(0,0,-difference).Unix())}
+	}
+	matchStage := bson.D{
+		{"$match", bson.D{
+			{"review_date", bson.D{{"$gt",workingTime}}},
+		}},
+	}
+
+	groupStage := bson.D{
+		{"$group", bson.D{
+			{"_id", "$" + groupByAttribute},
+			{"count", bson.D{{"$sum", 1}}},
+		}},
+	}
+
 	cur,err := reviewCollection.Aggregate(dbContext,mongo.Pipeline{matchStage,groupStage})
-	var showsWithInfo []bson.M
+	var reviewAggregator []bson.M
+
 	if cur == nil {
 		fmt.Println("cursor nil")
-		return showsWithInfo
+		return reviewAggregator
 	}
-	if err = cur.All(dbContext, &showsWithInfo); err != nil {
-		panic(err)
+
+	if err = cur.All(dbContext, &reviewAggregator); err != nil {
+		log.Fatal(err)
 	}
-	return showsWithInfo
+	return reviewAggregator
+}
+
+func (appReviewRepo *AppReviewRepository) DateWiseReviews(groupByAttribute string, differenceInDays int) []bson.M {
+	var workingTime primitive.Timestamp
+	var reviewDateGroup bson.M
+	dbContext := context.TODO()
+	reviewCollection := appReviewRepo.DB.Collection("app_reviews")
+	workingTime = primitive.Timestamp{T:uint32(time.Now().AddDate(0,0,-differenceInDays).Unix())}
+
+	reviewDateGroup = bson.M{
+		"$dateToString": bson.D{
+			{"format", "%Y-%m-%d"},
+			{"date", "$review_date"},
+		},
+	}
+
+	matchStage := bson.D{
+		{"$match", bson.D{
+			{"review_date", bson.D{{"$gt",workingTime}}},
+		}},
+	}
+
+	groupStage := bson.D{{
+		"$group", bson.D{
+			{"_id", bson.D{
+				{groupByAttribute, "$" + groupByAttribute},
+				{"review_date", reviewDateGroup},
+			},
+			}, {"count", bson.D{
+				{"$sum", 1},
+			}},
+		},
+	}}
+
+	cur,err := reviewCollection.Aggregate(dbContext,mongo.Pipeline{matchStage,groupStage})
+	var reviewAggregator []bson.M
+
+	if cur == nil {
+		fmt.Println("cursor nil")
+		return reviewAggregator
+	}
+
+	if err = cur.All(dbContext, &reviewAggregator); err != nil {
+		log.Fatal(err)
+	}
+	return reviewAggregator
 }

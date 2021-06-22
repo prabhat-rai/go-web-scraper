@@ -19,8 +19,8 @@
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                iOS Reviews (Last Month)</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">1198</div>
+                iOS Reviews (Last 30D)</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{.platform.month.ios}}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-apple fa-2x text-gray-300"></i>
@@ -37,8 +37,8 @@
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                iOS Reviews (This Month)</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">186</div>
+                iOS Reviews (Last 7D)</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{.platform.week.ios}}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-apple fa-2x text-gray-300"></i>
@@ -55,8 +55,8 @@
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                Android Reviews (Last Month)</div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">270</div>
+                Android Reviews (Last 30D)</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{.platform.month.android}}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-google fa-2x text-gray-300"></i>
@@ -73,9 +73,9 @@
           <div class="row no-gutters align-items-center">
             <div class="col mr-2">
               <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                Android Reviews (This Month)
+                Android Reviews (Last 7D)
               </div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">12</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{.platform.week.android}}</div>
             </div>
             <div class="col-auto">
               <i class="fas fa-google fa-2x text-gray-300"></i>

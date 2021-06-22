@@ -14,6 +14,11 @@ import (
 func SendMailForNewReviews(receiverEmails []string, reviews []model.AppReview, groupName string, keywords string, mailConfig conf.MailConfig) {
 	fmt.Printf("\nSending mail for %s Group to : %s", groupName, strings.Join(receiverEmails, " & "))
 
+	if mailConfig.SendMail == "N" {
+		fmt.Println("Skipping sending mail")
+		return
+	}
+
 	// SMTP server configuration.
 	from := mailConfig.User
 	password := mailConfig.Password
