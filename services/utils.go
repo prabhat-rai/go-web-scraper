@@ -150,10 +150,17 @@ func GetKeyBasedCountForDailyBasis(aggregateResultFromDb []bson.M, aggregator st
 
 func GetCommonDataForTemplates(c echo.Context) CommonDataForTemplates {
 
+	path := c.Path()
+	platform := c.QueryParam("platform")
+
+	if platform != "" {
+		path += "?platform=" + platform
+	}
+
 	authUser := GetAuthenticatedUser(c)
 	return CommonDataForTemplates{
 		UserName: authUser.Name,
 		// User: authUser,
-		Path: c.Path(),
+		Path: path,
 	}
 }

@@ -39,8 +39,8 @@
                  aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item {{if stringEquals .commonData.Path "/reviews"}}active{{end}}" href="/reviews">All</a>
-                    <a class="collapse-item" href="#">iOS</a>
-                    <a class="collapse-item" href="#">Android</a>
+                    <a class="collapse-item {{if stringEquals .commonData.Path "/reviews?platform=ios"}}active{{end}}" href="/reviews?platform=ios">iOS</a>
+                    <a class="collapse-item {{if stringEquals .commonData.Path "/reviews?platform=android"}}active{{end}}" href="/reviews?platform=android">Android</a>
                 </div>
             </div>
         </li>
