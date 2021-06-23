@@ -39,8 +39,9 @@
                             <div class="form-group row" novalidate>
                             <div class="col-sm-12 mb-3 mb-sm-0">
                                      Keywords:
-                              <select id="keywordGroupSelect" class="ratings-filter select2-dropdown form-control form-control-user" data-filter-on="keyword_groups" onchange="webScrapperApp.getKeywords()" required
-                                    data-url="/ajax/keyword-groups/list" data-text-key="group_name" style="width: 200px; height: 33px" multiple>
+                              <select id="keywordGroupSelect" class="ratings-filter select2-dropdown form-control form-control-user"
+                                      data-filter-on="keyword_groups" onchange="webScrapperApp.getKeywords()" required
+                                      data-url="/ajax/keywords/list" data-id-key="name" data-text-key="name" multiple="multiple">
                                 <option value="">-Group-</option>
                                 {{range .keyword_groups}}
                                     <option value="{{.}}">{{.}}</option>
