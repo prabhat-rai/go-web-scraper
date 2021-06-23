@@ -312,6 +312,17 @@ var webScrapperApp= {
         });
     },
 
+    setupReviewPage : function () {
+        let url = new URL(location.href);
+        let searchParams = new URLSearchParams(url.search);
+        let platform = searchParams.get('platform');
+
+        if(platform) {
+            $('#platformSelect').val(platform);
+            webScrapperApp.applyReviewFilters();
+        }
+    },
+
     changeActiveStatus : function (type, name,status) {
         $.ajax({
             url: "/ajax/" + type + "/status?id="+name+"&active="+!status,
@@ -397,6 +408,9 @@ $( document ).ready( function () {
         switch (page) {
             case "analytics":
                 webScrapperApp.loadAnalyticsData();
+                break;
+            case "reviews":
+                webScrapperApp.setupReviewPage();
                 break;
             default:
                 console.log("Unknown Page");
