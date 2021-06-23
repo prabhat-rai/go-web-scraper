@@ -8,10 +8,10 @@ import (
 )
 
 func (h *Handler) LoadAnalyticsPage(c echo.Context) (err error) {
-	userData := services.GetAuthenticatedUser(c)
+	commonData := services.GetCommonDataForTemplates(c)
 
 	return c.Render(http.StatusOK, "analytics.tmpl", map[string]interface{}{
-		"name": userData.Name,
+		"commonData" : commonData,
 	})
 }
 

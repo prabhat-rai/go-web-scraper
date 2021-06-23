@@ -11,10 +11,10 @@ import (
 )
 
 func (h *Handler) ListKeywordGroups(c echo.Context) (err error) {
-	userData := services.GetAuthenticatedUser(c)
+	commonData := services.GetCommonDataForTemplates(c)
 
 	return c.Render(http.StatusOK, "keyword_groups.tmpl", map[string]interface{}{
-		"name": userData.Name,
+		"commonData" : commonData,
 	})
 }
 
@@ -37,9 +37,9 @@ func (h *Handler) ChangeSubscriptionToKeywordGroup (c echo.Context) (err error) 
 }
 
 func (h *Handler) CreateKeywordGroups(c echo.Context) (err error) {
-	userData := services.GetAuthenticatedUser(c)
+	commonData := services.GetCommonDataForTemplates(c)
 	return c.Render(http.StatusOK, "create_keyword_groups.tmpl", map[string]interface{}{
-		"name": userData.Name,
+		"commonData" : commonData,
 	})
 }
 

@@ -130,10 +130,10 @@ func (h *Handler) RetrieveReviews(c echo.Context) (err error) {
 }
 
 func (h *Handler) ListReviews(c echo.Context) (err error) {
-	userData := services.GetAuthenticatedUser(c)
+	commonData := services.GetCommonDataForTemplates(c)
 
 	return c.Render(http.StatusOK, "reviews.tmpl", map[string]interface{}{
-		"name": userData.Name,
+		"commonData" : commonData,
 		"reviews": nil,
 		"concepts": h.Config.AllApps.Apps,
 		"platforms" : []string{"ios", "android"},

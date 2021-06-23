@@ -10,18 +10,18 @@ import (
 )
 
 func (h *Handler) AppsList(c echo.Context) (err error) {
-	userData := services.GetAuthenticatedUser(c)
+	commonData := services.GetCommonDataForTemplates(c)
 	appDetails := conf.GetAppsConfig(h.DB, false)
 	return c.Render(http.StatusOK, "apps_list.tmpl", map[string]interface{}{
-		"name": userData.Name,
+		"commonData" : commonData,
 		"apps": appDetails.Apps,
 	})
 }
 
 func (h *Handler) CreateApps(c echo.Context) (err error) {
-	userData := services.GetAuthenticatedUser(c)
+	commonData := services.GetCommonDataForTemplates(c)
 	return c.Render(http.StatusOK, "create_apps.tmpl", map[string]interface{}{
-		"name": userData.Name,
+		"commonData" : commonData,
 	})
 }
 func (h *Handler) AddApps(c echo.Context) (err error) {

@@ -13,10 +13,10 @@ func (h *Handler) Home(c echo.Context) (err error) {
 	conceptCountsLastMonth := h.AppReviewRepository.CountReviews("concept", 1, "months")
 	platformCountsLastMonth := h.AppReviewRepository.CountReviews("platform", 1, "months")
 
-	userData := services.GetAuthenticatedUser(c)
+	commonData := services.GetCommonDataForTemplates(c)
 
 	return c.Render(http.StatusOK, "index.tmpl", map[string]interface{}{
-		"name": userData.Name,
+		"commonData" : commonData,
 		"concept" : map[string]interface{}{
 			"week" : services.GetKeyBasedCount(conceptCountsLastWeek),
 			"month" : services.GetKeyBasedCount(conceptCountsLastMonth),

@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -31,6 +32,15 @@ func humanDate(t time.Time) string {
 	return t.UTC().Format("02 Jan 2006 at 15:04")
 }
 
+
+func stringContains(haystack string, needle string) bool {
+	return strings.Contains(haystack, needle)
+}
+
+func stringEquals(str1 string, str2 string) bool {
+	return str1 == str2
+}
+
 func noescape(str string) template.HTML {
 	return template.HTML(str)
 }
@@ -38,6 +48,8 @@ func noescape(str string) template.HTML {
 var functions = template.FuncMap{
 	"humanDate": humanDate,
 	"noEscape": noescape,
+	"stringContains": stringContains,
+	"stringEquals": stringEquals,
 }
 
 func GetTemplateCache() map[string]*template.Template {

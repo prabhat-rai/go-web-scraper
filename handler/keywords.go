@@ -10,10 +10,10 @@ import (
 )
 
 func (h *Handler) ListKeywords(c echo.Context) (err error) {
-	userData := services.GetAuthenticatedUser(c)
+	commonData := services.GetCommonDataForTemplates(c)
 
 	return c.Render(http.StatusOK, "keywords.tmpl", map[string]interface{}{
-		"name": userData.Name,
+		"commonData" : commonData,
 	})
 }
 
@@ -25,9 +25,9 @@ func (h *Handler) RetrieveKeywords(c echo.Context) (err error) {
 }
 
 func (h *Handler) CreateKeywords(c echo.Context) (err error) {
-	userData := services.GetAuthenticatedUser(c)
+	commonData := services.GetCommonDataForTemplates(c)
 	return c.Render(http.StatusOK, "create_keywords.tmpl", map[string]interface{}{
-		"name": userData.Name,		
+		"commonData" : commonData,
 	})
 }
 

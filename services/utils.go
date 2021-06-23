@@ -19,6 +19,12 @@ type (
 		SortOrder int64
 		SortColumnName string
 	}
+
+	CommonDataForTemplates struct {
+		Path 		string
+		UserName 	string
+		User 		*model.User
+	}
 )
 
 func HandleDbError(err interface{}) (error error) {
@@ -140,4 +146,14 @@ func GetKeyBasedCountForDailyBasis(aggregateResultFromDb []bson.M, aggregator st
 	}
 
 	return keyBasedCount
+}
+
+func GetCommonDataForTemplates(c echo.Context) CommonDataForTemplates {
+
+	authUser := GetAuthenticatedUser(c)
+	return CommonDataForTemplates{
+		UserName: authUser.Name,
+		// User: authUser,
+		Path: c.Path(),
+	}
 }

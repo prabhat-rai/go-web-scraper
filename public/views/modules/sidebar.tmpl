@@ -14,7 +14,7 @@
         <hr class="sidebar-divider my-0">
 
         <!-- Nav Item - Dashboard -->
-        <li class="nav-item active">
+        <li class="nav-item {{if stringEquals .commonData.Path "/"}}active{{end}}">
             <a class="nav-link" href="/">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span>Dashboard</span></a>
@@ -23,64 +23,76 @@
         <!-- Divider -->
         <hr class="sidebar-divider">
 
-        <!-- Heading -->
+        <!-- Reviews Header -->
         <div class="sidebar-heading">
             Reviews Management
         </div>
 
-        <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-               aria-expanded="true" aria-controls="collapseTwo">
+        <!-- Nav Item - Reviews -->
+        <li class="nav-item {{if stringContains .commonData.Path "reviews"}}active{{end}}">
+            <a class="nav-link {{if stringContains .commonData.Path "reviews"}}active{{else}}collapsed{{end}}" href="#"
+               data-toggle="collapse" data-target="#collapseReviewSection" aria-expanded="true" aria-controls="collapseReviewSection">
                 <i class="fas fa-fw fa-theater-masks"></i>
                 <span>Reviews</span>
             </a>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div id="collapseReviewSection" class="collapse {{if stringContains .commonData.Path "reviews"}}show{{end}}"
+                 aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" href="/reviews">All</a>
+                    <a class="collapse-item {{if stringEquals .commonData.Path "/reviews"}}active{{end}}" href="/reviews">All</a>
                     <a class="collapse-item" href="#">iOS</a>
                     <a class="collapse-item" href="#">Android</a>
                 </div>
             </div>
         </li>
 
-        <!-- Nav Item - Utilities Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-               aria-expanded="true" aria-controls="collapseUtilities">
+        <!-- Nav Item - Analytics -->
+        <li class="nav-item {{if stringEquals .commonData.Path "/analytics"}}active{{end}}">
+            <a class="nav-link" href="/analytics">
+                <i class="fas fa-fw fa-chart-area"></i>
+                <span>Review Analysis</span>
+            </a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        <!-- Reviews Header -->
+        <div class="sidebar-heading">
+            Keyword & App Management
+        </div>
+
+        <!-- Nav Item - Keywords and Keyword Groups -->
+        <li class="nav-item {{if stringContains .commonData.Path "keyword"}}active{{end}}">
+            <a class="nav-link {{if stringContains .commonData.Path "keyword"}}active{{else}}collapsed{{end}}" href="#"
+               data-toggle="collapse" data-target="#collapseKeywordsSection" aria-expanded="true" aria-controls="collapseKeywordsSection">
                 <i class="fas fa-fw fa-map-signs"></i>
                 <span>Keywords</span>
             </a>
-            <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-                 data-parent="#accordionSidebar">
+            <div id="collapseKeywordsSection" class="collapse {{if stringContains .commonData.Path "keyword"}}show{{end}}"
+                 aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" href="/keywords">All Keywords</a>
-                    <a class="collapse-item" href="/keyword-groups">All Keyword Groups</a>
-                    <a class="collapse-item" href="/keywords/add">New Keyword</a>
-                    <a class="collapse-item" href="/keyword-groups/add">New Keyword Group</a>
+                    <a class="collapse-item {{if stringEquals .commonData.Path "/keywords"}}active{{end}}" href="/keywords">All Keywords</a>
+                    <a class="collapse-item {{if stringEquals .commonData.Path "/keyword-groups"}}active{{end}}" href="/keyword-groups">All Keyword Groups</a>
+                    <a class="collapse-item {{if stringEquals .commonData.Path "/keywords/add"}}active{{end}}" href="/keywords/add">New Keyword</a>
+                    <a class="collapse-item {{if stringEquals .commonData.Path "/keyword-groups/add"}}active{{end}}" href="/keyword-groups/add">New Keyword Group</a>
                 </div>
             </div>
         </li>
 
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseApps"
-               aria-expanded="true" aria-controls="collapseUtilities">
+        <!-- Nav Item - Apps -->
+        <li class="nav-item {{if stringContains .commonData.Path "apps"}}active{{end}}">
+            <a class="nav-link {{if stringContains .commonData.Path "apps"}}active{{else}}collapsed{{end}}" href="#" data-toggle="collapse" data-target="#collapseAppsSection"
+               aria-expanded="true" aria-controls="collapseAppsSection">
                 <i class="fas fa-fw fa-mobile"></i>
                 <span>Apps</span>
             </a>
-            <div id="collapseApps" class="collapse" aria-labelledby="headingApps"
+            <div id="collapseAppsSection" class="collapse {{if stringContains .commonData.Path "apps"}}show{{end}}" aria-labelledby="headingApps"
                  data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" href="/apps">All Apps</a>
-                    <a class="collapse-item" href="/apps/add">Add Apps</a>
+                    <a class="collapse-item {{if stringEquals .commonData.Path "/apps"}}active{{end}}" href="/apps">All Apps</a>
+                    <a class="collapse-item {{if stringEquals .commonData.Path "/apps/add"}}active{{end}}" href="/apps/add">Add App</a>
                 </div>
             </div>
-        </li>
-        <!-- Nav Item - Charts -->
-        <li class="nav-item">
-            <a class="nav-link" href="/analytics">
-                <i class="fas fa-fw fa-chart-area"></i>
-                <span>Review Analysis</span></a>
         </li>
 
         <!-- Divider -->
