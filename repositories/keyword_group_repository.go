@@ -86,7 +86,7 @@ func (keywordGroupRepo *KeywordGroupRepository) RetrieveKeywordGroups(dataTableF
 		err := cursor.Decode(&keywordGroup)
 
 		if err != nil {
-			log.Fatal(err)
+			log.Panic(err)
 		}
 
 		if services.InArray(userData.Email, keywordGroup.Subscribers) == true {
@@ -124,7 +124,7 @@ func (keywordGroupRepo *KeywordGroupRepository) GetKeywordsForGroup(groupId stri
 	err := keywordCollection.FindOne(ctx, filter).Decode(&keywordGroup)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 		return make([]string, 0)
 	}
 
@@ -147,7 +147,7 @@ func (keywordGroupRepo *KeywordGroupRepository) UpdateSubscriptionForUser(keyGro
 
 	_, err := keywordCollection.UpdateOne(ctx, filter, updateData)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return 0
 	}
 
@@ -170,7 +170,7 @@ func (keywordGroupRepo *KeywordGroupRepository) GetGroupsWithActiveSubscribers()
 		err := cursor.Decode(&keywordGroup)
 
 		if err != nil {
-			log.Fatal(err)
+			log.Panic(err)
 		}
 
 		allKeywordGroups = append(allKeywordGroups, keywordGroup)
@@ -190,7 +190,7 @@ func (keywordGroupRepo *KeywordGroupRepository) CreateKeywordGroup(u *model.Keyw
 	dbContext := context.TODO()
 	result, err := keywordCollection.InsertOne(dbContext, u)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return err
 	}
 
@@ -206,7 +206,7 @@ func (keywordGroupRepo *KeywordGroupRepository) UpdateActiveStatus(u *model.Keyw
 	updateData := bson.M{operation: bson.M{"active": u.Active}}
 	updateResult, err := keywordGroupCollection.UpdateOne(ctx, filter, updateData)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return err
 	}
 

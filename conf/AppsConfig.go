@@ -65,7 +65,7 @@ func GetAppsConfig(db *mongo.Database, onlyActiveRecords bool) AllApps {
 		err := cursor.Decode(&app)
 
 		if err != nil {
-			log.Fatal(err)
+			log.Panic(err)
 		}
 
 		allApps.Apps = append(allApps.Apps, app)

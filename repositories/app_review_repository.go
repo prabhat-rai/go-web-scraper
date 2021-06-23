@@ -36,7 +36,7 @@ func (appReviewRepo *AppReviewRepository) AddBulkReviews(appReviews []*model.App
 	result, err := appReviewCollection.InsertMany(dbContext, insertRecords)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return nil, err
 	}
 
@@ -108,7 +108,7 @@ func (appReviewRepo *AppReviewRepository) RetrieveBulkReviews(dataTableFilters *
 		err := cursor.Decode(&review)
 
 		if err != nil {
-			log.Fatal(err) 
+			log.Panic(err)
 		}
 
 		allReviews.Data = append(allReviews.Data, review)
@@ -184,7 +184,7 @@ func (appReviewRepo *AppReviewRepository) GetReviewsWithMatchingKeywords(keyword
 		err := cursor.Decode(&review)
 
 		if err != nil {
-			log.Fatal(err)
+			log.Panic(err)
 		}
 
 		allReviews = append(allReviews, review)
@@ -232,7 +232,7 @@ func (appReviewRepo *AppReviewRepository) CountReviews(groupByAttribute string, 
 	}
 
 	if err = cur.All(dbContext, &reviewAggregator); err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	return reviewAggregator
 }
@@ -278,7 +278,7 @@ func (appReviewRepo *AppReviewRepository) DateWiseReviews(groupByAttribute strin
 	}
 
 	if err = cur.All(dbContext, &reviewAggregator); err != nil {
-		log.Fatal(err)
+		log.Panic(err)
 	}
 	return reviewAggregator
 }

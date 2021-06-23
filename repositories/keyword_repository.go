@@ -68,7 +68,7 @@ func (keywordRepo *KeywordRepository) RetrieveKeywords(dataTableFilters *service
 		err := cursor.Decode(&keyword)
 
 		if err != nil {
-			log.Fatal(err)
+			log.Panic(err)
 		}
 
 		allKeywords.Data = append(allKeywords.Data, keyword)
@@ -87,7 +87,7 @@ func (keywordRepo *KeywordRepository) CreateKeyword(u *model.Keyword) (err error
 	dbContext := context.TODO()
 	result, err := keywordCollection.InsertOne(dbContext, u)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return err
 	}
 
@@ -103,7 +103,7 @@ func (keywordRepo *KeywordRepository) UpdateActiveStatus(u *model.Keyword) (err 
 	updateData := bson.M{operation: bson.M{"active": u.Active}}
 	updateResult, err := keywordCollection.UpdateOne(ctx, filter, updateData)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return err
 	}
 

@@ -141,7 +141,7 @@ func fetchQueries(userCollection *mongo.Collection, dbContext context.Context) (
 		err := cursor.Decode(&user)
 
 		if err != nil {
-			log.Fatal(err)
+			log.Panic(err)
 		}
 
 		users = append(users, user)

@@ -57,25 +57,23 @@ func (h *Handler) AddKeywordGroups(c echo.Context) (err error) {
 
 	err = h.KeywordGroupRepository.CreateKeywordGroup(keyword_group)
 	if err != nil {
-		return c.Render(http.StatusOK, "create_keyword_groups.tmpl", map[string]interface{}{
-			"Flash": "Something went wrong!! Please Try Again.",
-		})
+		services.SetFlashMessage(c, "Something went wrong!! Please Try Again.")
+		return c.Redirect(http.StatusFound, "/keyword-groups/add")
 	}
-	userData := services.GetAuthenticatedUser(c)
-	return c.Render(http.StatusOK, "keyword_groups.tmpl", map[string]interface{}{
-		"name": userData.Name,
-		"message": "Keyword Group added successfully",
-	})
 
-	return nil
+	services.SetSuccessMessage(c, "Keyword Group added successfully!")
+	return c.Redirect(http.StatusFound, "/keyword-groups")
 }
 
 func (h *Handler) UpdateKeywordGroupsStatus(c echo.Context) (err error) {
 	active := false
 	id, err := primitive.ObjectIDFromHex(c.QueryParam("id"))
+
 	if err != nil {
-	log.Fatal(err)
+		log.Println(err)
+		return err
 	}
+
 	if c.QueryParam("active") == "true" {
 		active = true
 	}

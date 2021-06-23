@@ -14,8 +14,7 @@ func Authenticated(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		// Redirect to login page if session is not active
-		_ = c.Redirect(http.StatusTemporaryRedirect, "/login")
-		return nil
+		return c.Redirect(http.StatusTemporaryRedirect, "/login")
 	}
 }
 
@@ -27,7 +26,6 @@ func Guest(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		// If user is logged in load the homepage
-		_ = c.Redirect(http.StatusTemporaryRedirect, "/")
-		return nil
+		return c.Redirect(http.StatusTemporaryRedirect, "/")
 	}
 }

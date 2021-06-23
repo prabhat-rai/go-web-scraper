@@ -38,18 +38,12 @@ func (h *Handler) AddApps(c echo.Context) (err error) {
 
 	err = h.AppRepository.CreateApp(app)
 	if err != nil {
-		return c.Render(http.StatusOK, "create_apps.tmpl", map[string]interface{}{
-			"Flash": "Something went wrong!! Please Try Again.",
-		})
+		services.SetFlashMessage(c, "Something went wrong!! Please Try Again.")
+		return c.Redirect(http.StatusFound, "/apps/add")
 	}
 
-	appDetails := conf.GetAppsConfig(h.DB, false)
-	return c.Render(http.StatusOK, "apps_list.tmpl", map[string]interface{}{
-		"apps": appDetails.Apps,
-		"message": "App successfully created!",
-	})
-
-	return nil
+	services.SetSuccessMessage(c, "App successfully created!")
+	return c.Redirect(http.StatusFound, "/apps")
 }
 
 func (h *Handler) UpdateAppsStatus(c echo.Context) (err error) {

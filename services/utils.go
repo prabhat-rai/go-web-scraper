@@ -44,6 +44,10 @@ func SetFlashMessage(c echo.Context, message string) {
 	SetSessionValue(c, "flash", message)
 }
 
+func SetSuccessMessage(c echo.Context, message string) {
+	SetSessionValue(c, "message", message)
+}
+
 func SetSessionValue(c echo.Context, key string, value interface{}) {
 	sess, _ := session.Get("session", c)
 	sess.Values[key] = value

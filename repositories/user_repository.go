@@ -23,7 +23,7 @@ func (userRepo *UserRepository) CreateUser(u *model.User) (err error) {
 	dbContext := context.TODO()
 	result, err := userCollection.InsertOne(dbContext, u)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return err
 	}
 

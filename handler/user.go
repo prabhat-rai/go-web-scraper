@@ -43,31 +43,27 @@ func (h *Handler) Login(c echo.Context) error {
 
 	err := c.Bind(u)
 	if err != nil {
-		return c.Render(http.StatusOK, "login.tmpl", map[string]interface{}{
-			"Flash": services.GetFlashMessage(c),
-		})
+		services.SetFlashMessage(c, "Username or Password is incorrect.")
+		return c.Redirect(http.StatusFound, "/login")
 	}
 
 	user,err :=h.UserRepository.AuthenticateUser(u.Email, u.Password)
 	if err != nil {
 		services.SetFlashMessage(c, "Username or Password is incorrect.")
-		c.Redirect(http.StatusFound, "/login")
-		return nil
+		return c.Redirect(http.StatusFound, "/login")
 	}
 
 	services.SetSessionValue(c, "authenticated", true)
 	services.SetSessionValue(c, "userName", user.Name)
 	services.SetSessionValue(c, "userEmail", user.Email)
-	c.Redirect(http.StatusSeeOther, "/")
-	return nil
+	return c.Redirect(http.StatusSeeOther, "/")
 }
 
 func (h *Handler) Logout(c echo.Context) (err error) {
 	services.SetSessionValue(c, "authenticated", false)
 	services.SetSessionValue(c, "userName", false)
 	services.SetSessionValue(c, "userEmail", false)
-	c.Redirect(http.StatusSeeOther, "/login")
-	return err
+	return c.Redirect(http.StatusSeeOther, "/login")
 }
 
 func (h *Handler) RegisterForm(c echo.Context) (err error) {
@@ -87,23 +83,18 @@ func (h *Handler) Register(c echo.Context) (err error) {
 
 	err = c.Bind(user)
 	if err != nil {
-		//place holder to render register page with error message
-		return c.Render(http.StatusOK, "register.tmpl", map[string]interface{}{
-			"Flash": "Something went wrong!! Please Try Again.",
-		})
+		services.SetFlashMessage(c, "Something went wrong!! Please Try Again.")
+		return c.Redirect(http.StatusFound, "/register")
 	}
 
 	err = h.UserRepository.CreateUser(user)
 	if err != nil {
-		return c.Render(http.StatusOK, "register.tmpl", map[string]interface{}{
-			"Flash": "Something went wrong!! Please Try Again.",
-		})
+		services.SetFlashMessage(c, "Something went wrong!! Please Try Again.")
+		return c.Redirect(http.StatusFound, "/register")
 	}
 
 	services.SetSessionValue(c, "authenticated", true)
 	services.SetSessionValue(c, "userName", user.Name)
 	services.SetSessionValue(c, "userEmail", user.Email)
-	c.Redirect(http.StatusSeeOther, "/")
-
-	return nil
+	return c.Redirect(http.StatusSeeOther, "/")
 }

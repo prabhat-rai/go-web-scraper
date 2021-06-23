@@ -8,24 +8,18 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-
-
 type (
-
 	AppRepository struct {
 		DB *mongo.Database
 	}
 )
-
-
-
 
 func (appsRepository *AppRepository) CreateApp(u *model.Apps) (err error){
 	appCollection := appsRepository.DB.Collection("apps")
 	dbContext := context.TODO()
 	result, err := appCollection.InsertOne(dbContext, u)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return err
 	}
 
@@ -42,7 +36,7 @@ func (appsRepository *AppRepository) UpdateActiveStatus(u *model.Apps) (err erro
 
 	updateResult, err := appCollection.UpdateOne(ctx, filter, updateData)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return err
 	}
 

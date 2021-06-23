@@ -43,25 +43,22 @@ func (h *Handler) AddKeywords(c echo.Context) (err error) {
 
 	err = h.KeywordRepository.CreateKeyword(keyword)
 	if err != nil {
-		return c.Render(http.StatusOK, "create_keywords.tmpl", map[string]interface{}{
-			"Flash": "Something went wrong!! Please Try Again.",
-		})
+		services.SetFlashMessage(c, "Something went wrong!! Please Try Again.")
+		return c.Redirect(http.StatusFound, "/keywords/add")
 	}
-	userData := services.GetAuthenticatedUser(c)
-	return c.Render(http.StatusOK, "keywords.tmpl", map[string]interface{}{
-		"message": "Keyword added successfully",
-		"name": userData.Name,
-	})
 
-	return nil
+	services.SetSuccessMessage(c, "Keyword added successfully!")
+	return c.Redirect(http.StatusFound, "/keywords")
 }
 
 func (h *Handler) UpdateKeywordsStatus(c echo.Context) (err error) {
 	active := false
 	id, err := primitive.ObjectIDFromHex(c.QueryParam("id"))
+
 	if err != nil {
-	log.Fatal(err)
+		log.Println(err)
 	}
+
 	if c.QueryParam("active") == "true" {
 		active = true
 	}
