@@ -56,6 +56,7 @@ func (h *Handler) Login(c echo.Context) error {
 	services.SetSessionValue(c, "authenticated", true)
 	services.SetSessionValue(c, "userName", user.Name)
 	services.SetSessionValue(c, "userEmail", user.Email)
+	services.SetSessionValue(c, "role", user.Role)
 	return c.Redirect(http.StatusSeeOther, "/")
 }
 
@@ -63,6 +64,7 @@ func (h *Handler) Logout(c echo.Context) (err error) {
 	services.SetSessionValue(c, "authenticated", false)
 	services.SetSessionValue(c, "userName", false)
 	services.SetSessionValue(c, "userEmail", false)
+	services.SetSessionValue(c, "role", false)
 	return c.Redirect(http.StatusSeeOther, "/login")
 }
 
@@ -96,5 +98,6 @@ func (h *Handler) Register(c echo.Context) (err error) {
 	services.SetSessionValue(c, "authenticated", true)
 	services.SetSessionValue(c, "userName", user.Name)
 	services.SetSessionValue(c, "userEmail", user.Email)
+	services.SetSessionValue(c, "role", user.Role)
 	return c.Redirect(http.StatusSeeOther, "/")
 }

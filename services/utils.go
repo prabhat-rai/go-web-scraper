@@ -23,6 +23,7 @@ type (
 	CommonDataForTemplates struct {
 		Path 		string
 		UserName 	string
+		Role		string
 		User 		*model.User
 	}
 )
@@ -63,10 +64,11 @@ func SetSessionValue(c echo.Context, key string, value interface{}) {
 func GetAuthenticatedUser(c echo.Context) *model.User {
 	userName := fmt.Sprintf("%v", GetSessionValue(c, "userName"))
 	userEmail := fmt.Sprintf("%v", GetSessionValue(c, "userEmail"))
-
+	role := fmt.Sprintf("%v", GetSessionValue(c, "role"))
 	return &model.User{
 		Name: userName,
 		Email: userEmail,
+		Role: role,
 	}
 }
 
@@ -153,7 +155,7 @@ func GetCommonDataForTemplates(c echo.Context) CommonDataForTemplates {
 	authUser := GetAuthenticatedUser(c)
 	return CommonDataForTemplates{
 		UserName: authUser.Name,
-		// User: authUser,
+		Role: authUser.Role,
 		Path: c.Path(),
 	}
 }
