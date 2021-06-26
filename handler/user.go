@@ -4,6 +4,7 @@ import (
 	"echoApp/model"
 	"echoApp/services"
 	"github.com/labstack/echo/v4"
+	"log"
 	"net/http"
 )
 
@@ -30,6 +31,7 @@ func (h *Handler) Home(c echo.Context) (err error) {
 
 
 func (h *Handler) LoginForm(c echo.Context) (err error) {
+
 	return c.Render(http.StatusOK, "login.tmpl", map[string]interface{}{
 		"Flash": services.GetFlashMessage(c),
 	})
@@ -100,4 +102,40 @@ func (h *Handler) Register(c echo.Context) (err error) {
 	services.SetSessionValue(c, "userEmail", user.Email)
 	services.SetSessionValue(c, "role", user.Role)
 	return c.Redirect(http.StatusSeeOther, "/")
+}
+
+func (h *Handler) ListUsers(c echo.Context) (err error) {
+	dataTableFilters := services.QueryToDataTables(c)
+	searchWord := c.QueryParam("searchWord")
+	users, err := h.UserRepository.ListUsers(dataTableFilters,searchWord)
+	return c.JSON(http.StatusOK, users)
+}
+
+func (h *Handler) AddUser(c echo.Context) (err error) {
+	user := &model.User{
+		Name: c.FormValue("name"),
+		Email: c.FormValue("email"),
+		Password: c.FormValue("password"),
+		Phone: c.FormValue("phone"),
+	}
+
+	err = c.Bind(user)
+	if err != nil {
+		services.SetFlashMessage(c, "Something went wrong!! Please Try Again.")
+		return err
+	}
+	err = h.UserRepository.CreateUser(user)
+	return err
+}
+
+func (h *Handler) ChangePassword(c echo.Context) (err error) {
+	authUser := services.GetAuthenticatedUser(c)
+	password := c.FormValue("password")
+
+	err = h.UserRepository.ChangePassword(authUser.Email,password)
+	if err != nil {
+		log.Println("Error while updating the password", err)
+		return err
+	}
+	return err
 }

@@ -75,6 +75,11 @@ func registerRoutes(e *echo.Echo, client *mongo.Client,dbName string) *handler.H
 	e.GET("/dev-test/slack", h.SendSlackMessage, middlewares.Authenticated)
 	e.GET("/dev-test/review", h.FetchReview, middlewares.Authenticated)
 
+	//User routes
+	e.GET("/users", h.ListUsers, middlewares.Authenticated)
+	e.POST("/add-user", h.AddUser, middlewares.Authenticated)
+	e.POST("/change-password", h.ChangePassword, middlewares.Authenticated)
+
 	// File server
 	e.Static("/static", "public/static")
 
