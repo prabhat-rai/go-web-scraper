@@ -115,15 +115,15 @@ func (h *Handler) AddUser(c echo.Context) (err error) {
 	user := &model.User{
 		Name: c.FormValue("name"),
 		Email: c.FormValue("email"),
-		Password: c.FormValue("password"),
 		Phone: c.FormValue("phone"),
 	}
-
 	err = c.Bind(user)
 	if err != nil {
 		services.SetFlashMessage(c, "Something went wrong!! Please Try Again.")
 		return err
 	}
+	//Set default Password
+	user.Password = h.Config.ConfigProps.DefaultPassword
 	err = h.UserRepository.CreateUser(user)
 	return err
 }

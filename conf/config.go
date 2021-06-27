@@ -29,10 +29,11 @@ type (
 	}
 
 	ConfigProps struct {
-		AppPort      string `mapstructure:"APP_PORT"`
-		DbConfig DbConfig `mapstructure:"DB_CONFIG"`
+		AppPort          string            `mapstructure:"APP_PORT"`
+		DbConfig         DbConfig          `mapstructure:"DB_CONFIG"`
 		SchedulerConfigs map[string]string `mapstructure:"SCHEDULER_CONFIGS"`
-		MailConfig MailConfig `mapstructure:"MAIL_CONFIG"`
+		MailConfig       MailConfig        `mapstructure:"MAIL_CONFIG"`
+		DefaultPassword  string            `mapstructure:"DEFAULT_PASSWORD"`
 	}
 
 )
