@@ -70,16 +70,8 @@ func (userRepo *UserRepository) ListUsers(dataTableFilters *services.DataTableFi
 
 	count, err := userCollection.CountDocuments(dbContext, bson.D{})
 //search word in name
-	var searchFiltersinName = bson.D{}
-	if len(searchWord) > 0 {
-		searchFiltersinName = bson.D{{"name", bson.D{
-			{"$regex", primitive.Regex{
-				Pattern: searchWord,
-				Options: "i",
-			}},
-		},
-		}}
-	}
+	var searchFiltersinName = bson.D{}		
+		searchFiltersinName = append(searchFiltersinName, bson.E{"name", primitive.Regex{Pattern: dataTableFilters.Search, Options: "i"}})
 
 	cursor, err := userCollection.Find(dbContext, searchFiltersinName,findOptions)
 	defer cursor.Close(dbContext)
@@ -101,6 +93,9 @@ func (userRepo *UserRepository) ListUsers(dataTableFilters *services.DataTableFi
 
 	userData.Total = count
 	userData.LastPage = math.Ceil(float64(count / dataTableFilters.Limit))
+	if userData.Data == nil {
+		userData.Data = make([]model.User, 0)
+	}
 	return userData, err
 }
 
@@ -120,4 +115,19 @@ func (userRepo *UserRepository) ChangePassword(email string,password string) (er
 	}
 	log.Println("Updated records count",result.ModifiedCount)
 	return
+}
+
+func (userRepo *UserRepository) UpdateUser(u *model.User) (err error){
+	filter := bson.D{{"_id", u.ID}}
+	ctx := context.TODO()
+	operation := "$set"
+	userCollection := userRepo.DB.Collection("users")
+	updateData := bson.M{operation: bson.M{"name": u.Name, "email": u.Email, "role": u.Role, "phone": u.Phone}}
+	updateResult, err := userCollection.UpdateOne(ctx, filter, updateData)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	log.Println("Updated Docs: ", updateResult)
+	return nil
 }

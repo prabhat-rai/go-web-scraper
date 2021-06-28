@@ -55,7 +55,6 @@ func registerRoutes(e *echo.Echo, client *mongo.Client,dbName string) *handler.H
 	e.GET("/keyword-groups", h.ListKeywordGroups, middlewares.Authenticated)
 	e.GET("/analytics", h.LoadAnalyticsPage, middlewares.Authenticated)
 	e.POST("/keyword-groups/add", h.AddKeywordGroups, middlewares.Authenticated)
-
 	// AJAX listing Routes
 	e.GET("/ajax/reviews/list", h.RetrieveReviews, middlewares.Authenticated)
 	e.GET("/ajax/keywords/list", h.RetrieveKeywords, middlewares.Authenticated)
@@ -63,6 +62,7 @@ func registerRoutes(e *echo.Echo, client *mongo.Client,dbName string) *handler.H
 	e.POST("/ajax/keywords/status", h.UpdateKeywordsStatus, middlewares.Authenticated)
 	e.POST("/ajax/keyword-groups/status", h.UpdateKeywordGroupsStatus, middlewares.Authenticated)
 	e.POST("/ajax/apps/status", h.UpdateAppsStatus, middlewares.Authenticated)
+	e.GET("ajax/users/list", h.ListUsers, middlewares.Authenticated)
 
 
 	e.POST("/ajax/keyword-groups/change-subscription", h.ChangeSubscriptionToKeywordGroup, middlewares.Authenticated)
@@ -76,9 +76,11 @@ func registerRoutes(e *echo.Echo, client *mongo.Client,dbName string) *handler.H
 	e.GET("/dev-test/review", h.FetchReview, middlewares.Authenticated)
 
 	//User routes
-	e.GET("/users", h.ListUsers, middlewares.Authenticated)
+	e.GET("/users", h.UsersList, middlewares.Authenticated)
+	e.GET("/users/add", h.CreateUsers, middlewares.Authenticated)
 	e.POST("/add-user", h.AddUser, middlewares.Authenticated)
 	e.POST("/change-password", h.ChangePassword, middlewares.Authenticated)
+	e.POST("/edit-user", h.UpdateUser, middlewares.Authenticated)
 
 	// File server
 	e.Static("/static", "public/static")
