@@ -1,0 +1,104 @@
+{{template "app" .}}
+{{define "title"}}Users{{end}}
+{{define "header_js_css"}}
+    <!-- Custom styles for this page -->
+    <link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+{{end}}
+
+
+{{define "main"}}
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Users</h1>
+    </div>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <div>
+                <h6 class="m-0 font-weight-bold text-primary float-left">All Users</h6>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered data-table-list" id="userListDataTable" data-action-columns="3"
+                       data-url="/ajax/users/list" width="100%" cellspacing="0" data-entity="users" >
+                    <thead>
+                        <tr>
+                            <th data-dt-name="name" data-dt-query="name">Name</th>
+                            <th data-dt-name="email" data-dt-query="email" data-col-searchable="0">Email</th>
+                            <th data-dt-name="role" data-dt-query="role" data-col-searchable="0">User Role</th>
+                            <th data-dt-name="action" data-dt-query="action" data-col-searchable="0">Action</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>User Role</th>
+                            <th>Action</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                    </tbody>
+                </table>
+                 <div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">User Model</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                <form action="/user/edit" method="POST"  class="user">
+                                <div class="form-group row" novalidate>
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <input name="name" type="text" class="form-control form-control-user" id="userName"
+                                            placeholder="Name" required>
+                                    </div>
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                    <input name="email" type="email" class="form-control form-control-user" id="userEmail"
+                                            placeholder="Email" required>
+                                    </div>
+                                </div>
+                                <div class="form-group row" novalidate>
+                                 <div class="col-sm-6">
+                                    <input name="phone" type="text" class="form-control form-control-user" id="userPhone"
+                                            placeholder="Phone" required>
+                                    </div>
+                                <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <label >
+                                        Role :
+                                        <input type="radio" id="admin" name="role" value="admin">
+                                        <label for="html">Admin</label>
+                                        <input type="radio" id="user" name="role" value="user">
+                                        <label for="html">User</label>
+                                    </label>
+                                    </div>
+                                </div>
+                                <input name="id" type="text" class="form-control form-control-user" id="userId"
+                                            placeholder="id" style="display: none;">
+                                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+            </div>
+        </div>
+    </div>
+
+{{end}}
+
+{{define "footer_js_css"}}
+    <!-- Page level plugins -->
+    <script src="/static/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="/static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+{{end}}

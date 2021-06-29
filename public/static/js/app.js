@@ -53,7 +53,10 @@ var webScrapperApp= {
             ? tableObj.attr('data-status-columns') : false;
         var columnListForStatus = statusColumns !== false ? statusColumns.split(',') : [];
 
-        // Columns array to hold details of datatable columns
+        var actionColumns = tableObj.attr( 'data-action-columns' )
+            ? tableObj.attr('data-action-columns') : false;
+        var columnListForAction = actionColumns !== false ? actionColumns.split(',') : [];
+            // Columns array to hold details of datatable columns
         var columns = [];
 
         tableObj. find( 'thead th' ).each( function () {
@@ -183,6 +186,18 @@ var webScrapperApp= {
                                 year : 'numeric',
                             });
                         }
+                    },
+                    {
+                        
+                        targets: columnListForAction.map(Number),
+                            render: function(cellData, type, row) {
+                                let attributeId = row.id;
+                                let name = row.name;
+                                let email = row.email;
+                                let phone = row.phone;
+                                let role = row.role;
+                                return '<button onclick="webScrapperApp.openModel(\'' + attributeId + '\',\'' + name + '\',\'' + email + '\',\'' + phone + '\',\'' + role+'\'' + ')" data-toggle="modal" data-target="#userModal" class="btn btn-primary" type="button" id="edit" aria-haspopup="true" aria-expanded="false"> Edit </button>';
+                            }
                     },
                 ]
             });
@@ -357,6 +372,18 @@ var webScrapperApp= {
     getKeywords: function () {
         $("#keyword-list").val($("#keywordGroupSelect").val())
     },
+    openModel: function (id,name,email,phone,role,active){
+        document.getElementById("userId").value = id;
+        document.getElementById("userName").value = name;
+        document.getElementById("userEmail").value = email;
+        document.getElementById("userPhone").value = phone;
+        if (role === "admin"){
+            document.getElementById("admin").checked = true;
+        }
+        else{
+            document.getElementById("user").checked = true;
+        }
+    }
 };
 
 $( document ).ready( function () {
