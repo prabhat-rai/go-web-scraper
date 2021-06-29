@@ -147,7 +147,7 @@ func (h *Handler) AddUser(c echo.Context) (err error) {
 		return err
 	}
 	services.SetSuccessMessage(c, "User added successfully!")
-	return c.Redirect(http.StatusFound, "/users")
+	return c.Redirect(http.StatusFound, "/user")
 }
 
 func (h *Handler) ChangePassword(c echo.Context) (err error) {
@@ -188,5 +188,5 @@ func (h *Handler) UpdateUser(c echo.Context) (err error) {
 	}
 
 	services.SetSuccessMessage(c, "User updated successfully!")
-	return c.Redirect(http.StatusFound, "/users")
+	return c.Redirect(http.StatusFound, "/user")
 }

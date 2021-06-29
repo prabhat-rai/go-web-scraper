@@ -76,11 +76,11 @@ func registerRoutes(e *echo.Echo, client *mongo.Client,dbName string) *handler.H
 	e.GET("/dev-test/review", h.FetchReview, middlewares.Authenticated)
 
 	//User routes
-	e.GET("/users", h.UsersList, middlewares.Authenticated)
-	e.GET("/users/add", h.CreateUsers, middlewares.Authenticated)
-	e.POST("/add-user", h.AddUser, middlewares.Authenticated)
-	e.POST("/change-password", h.ChangePassword, middlewares.Authenticated)
-	e.POST("/edit-user", h.UpdateUser, middlewares.Authenticated)
+	e.GET("/user", h.UsersList, middlewares.Authenticated)
+	e.GET("/user/add", h.CreateUsers, middlewares.Authenticated)
+	e.POST("/user/add", h.AddUser, middlewares.Authenticated)
+	e.POST("/user/change-password", h.ChangePassword, middlewares.Authenticated)
+	e.POST("/user/edit", h.UpdateUser, middlewares.Authenticated)
 
 	// File server
 	e.Static("/static", "public/static")
