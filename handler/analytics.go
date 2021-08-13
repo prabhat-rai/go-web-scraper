@@ -17,15 +17,16 @@ func (h *Handler) LoadAnalyticsPage(c echo.Context) (err error) {
 
 func (h *Handler) LoadAnalyticsCount(c echo.Context) (err error) {
 	noOfDays, err := strconv.Atoi(c.QueryParam("days"))
+	datatype:= c.QueryParam("datatype")
 
 	if err != nil {
 		noOfDays = 7
 	}
 
-	conceptWiseCount := h.AppReviewRepository.DateWiseReviews("concept", noOfDays)
+	conceptWiseCount := h.AppReviewRepository.DateWiseReviews("concept", noOfDays, datatype)
 	conceptWiseCountNew := services.GetKeyBasedCountForDailyBasis(conceptWiseCount, "concept")
 
-	platformWiseCount := h.AppReviewRepository.DateWiseReviews("platform", noOfDays)
+	platformWiseCount := h.AppReviewRepository.DateWiseReviews("platform", noOfDays, datatype)
 	platformWiseCountNew := services.GetKeyBasedCountForDailyBasis(platformWiseCount, "platform")
 
 	return c.JSON(http.StatusOK, map[string]interface{}{

@@ -10,7 +10,7 @@ type (
 		UserName 		string		  		`json:"user_name" bson:"user_name"`
 		Title			string				`json:"review_title" bson:"review_title"`
 		Description  	string        		`json:"review_description" bson:"review_description"`
-		Rating    		string        		`json:"rating" bson:"rating"`
+		Rating    		int        			`json:"rating" bson:"rating"`
 		CreatedAt 		primitive.Timestamp	`json:"created_at" bson:"created_at"`
 		UpdatedAt 		primitive.Timestamp	`json:"updated_at" bson:"updated_at"`
 		Platform 		string				`json:"platform" bson:"platform"`

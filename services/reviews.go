@@ -68,7 +68,7 @@ func LoadAndroidReviews(id string, appName string, keywords flash.Keywords, late
 			UserName: review.Reviewer,
 			Title: "",
 			Description: review.Text,
-			Rating: strconv.Itoa(review.Score),
+			Rating: review.Score,
 			CreatedAt: primitive.Timestamp{T:uint32(time.Now().Unix())},
 			UpdatedAt: primitive.Timestamp{T:uint32(time.Now().Unix())},
 			Platform: "android",
@@ -110,6 +110,11 @@ func LoadIosReviews(id string, appName string, keywords flash.Keywords, latestRe
 		if latestReviewId == entry.Id {
 			break
 		}
+		rating, err := strconv.Atoi(entry.Rating)
+		if err != nil {
+			log.Printf("Error GET: %v\n", err)			
+			return nil
+		}
 
 		appReviews = append(appReviews, &model.AppReview{
 			ReviewId: entry.Id,
@@ -117,7 +122,7 @@ func LoadIosReviews(id string, appName string, keywords flash.Keywords, latestRe
 			UserName: entry.Author.Name,
 			Title: entry.Title,
 			Description: entry.Content[0].Data,
-			Rating: entry.Rating,
+			Rating: rating,
 			CreatedAt: primitive.Timestamp{T:uint32(time.Now().Unix())},
 			UpdatedAt: primitive.Timestamp{T:uint32(time.Now().Unix())},
 			Platform: "ios",

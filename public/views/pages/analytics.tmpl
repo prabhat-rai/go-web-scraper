@@ -7,9 +7,15 @@
 
 {{define "main"}}
     <!-- Page Heading -->
+
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800" id="specific_page_method" data-page="analytics">Analytics</h1>
         <div class="float-right">
+        <label for="trends">Load Data for </label>
+            <select id="trends" onchange="webScrapperApp.loadAnalyticsData()">
+                <option value="review" selected="selected">Review over time</option>
+                <option value="rating">Rating over time</option>
+                 </select>
             <label for="noOfDays">Load Data for </label>
             <select id="noOfDays" onchange="webScrapperApp.loadAnalyticsData()">
                 <option value="7" selected="selected">7 Days</option>
@@ -28,7 +34,7 @@
             <!-- Area Chart -->
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Platform wise Reviews</h6>
+                    <h6 id="platformTitle" class="m-0 font-weight-bold text-primary">Platform wise reviews</h6>
                 </div>
                 <div class="card-body">
                     <div class="chart-area">
@@ -43,7 +49,7 @@
             <!-- Area Chart -->
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Concept wise Reviews</h6>
+                    <h6 id="conceptTitle" class="m-0 font-weight-bold text-primary">Concept wise reviews</h6>
                 </div>
                 <div class="card-body">
                     <div class="chart-area">

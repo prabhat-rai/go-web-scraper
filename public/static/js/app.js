@@ -256,6 +256,10 @@ var webScrapperApp= {
     },
 
     loadAnalyticsData : function () {
+        var value = document.getElementById("trends");  
+        var getvalue = value.options[value.selectedIndex].value;  
+        document.getElementById("platformTitle").innerHTML = "Platform wise "+getvalue
+        document.getElementById("conceptTitle").innerHTML = "Concept wise "+getvalue
         let noOfDays = $('#noOfDays').val();
         let dataForPlatformGraph = [];
         let dataForConceptGraph = [];
@@ -266,7 +270,7 @@ var webScrapperApp= {
         let allPlatformLabels = ['Android', 'iOS'];
         let platformLineColors = [ '#2577B5', '#DD7CB5' ];
         $.ajax({
-            url: "/ajax/analytics/counts?days=" + noOfDays,
+            url: "/ajax/analytics/counts?days=" + noOfDays+"&datatype="+getvalue,
             dataType: 'json',
             method : 'GET',
             success: function( response ) {

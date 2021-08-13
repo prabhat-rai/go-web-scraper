@@ -237,7 +237,7 @@ func (appReviewRepo *AppReviewRepository) CountReviews(groupByAttribute string, 
 	return reviewAggregator
 }
 
-func (appReviewRepo *AppReviewRepository) DateWiseReviews(groupByAttribute string, differenceInDays int) []bson.M {
+func (appReviewRepo *AppReviewRepository) DateWiseReviews(groupByAttribute string, differenceInDays int, datatype string) []bson.M {
 	var workingTime primitive.Timestamp
 	var reviewDateGroup bson.M
 	dbContext := context.TODO()
@@ -256,29 +256,54 @@ func (appReviewRepo *AppReviewRepository) DateWiseReviews(groupByAttribute strin
 			{"review_date", bson.D{{"$gt",workingTime}}},
 		}},
 	}
-
-	groupStage := bson.D{{
-		"$group", bson.D{
-			{"_id", bson.D{
-				{groupByAttribute, "$" + groupByAttribute},
-				{"review_date", reviewDateGroup},
+	if datatype == "review"{
+		groupStage := bson.D{{
+			"$group", bson.D{
+				{"_id", bson.D{
+					{groupByAttribute, "$" + groupByAttribute},
+					{"review_date", reviewDateGroup},
+				},
+				}, {"count", bson.D{
+					{"$sum", 1},
+				}},
 			},
-			}, {"count", bson.D{
-				{"$sum", 1},
-			}},
-		},
-	}}
-
-	cur,err := reviewCollection.Aggregate(dbContext,mongo.Pipeline{matchStage,groupStage})
-	var reviewAggregator []bson.M
-
-	if cur == nil {
-		fmt.Println("cursor nil")
+		}}
+	
+		cur,err := reviewCollection.Aggregate(dbContext,mongo.Pipeline{matchStage,groupStage})
+		var reviewAggregator []bson.M
+		if cur == nil {
+			fmt.Println("cursor nil")
+			return reviewAggregator
+		}
+	
+		if err = cur.All(dbContext, &reviewAggregator); err != nil {
+			log.Panic(err)
+		}
+		return reviewAggregator
+	} else{
+		groupStage := bson.D{{
+			"$group", bson.D{
+				{"_id", bson.D{
+					{groupByAttribute, "$" + groupByAttribute},
+					{"review_date", reviewDateGroup},
+				},
+				}, {"count", bson.D{
+					{"$avg", "$rating"},
+				}},
+			},
+		}}
+	
+		cur,err := reviewCollection.Aggregate(dbContext,mongo.Pipeline{matchStage,groupStage})
+		var reviewAggregator []bson.M
+		if cur == nil {
+			fmt.Println("cursor nil")
+			return reviewAggregator
+		}
+	
+		if err = cur.All(dbContext, &reviewAggregator); err != nil {
+			log.Panic(err)
+		}
 		return reviewAggregator
 	}
-
-	if err = cur.All(dbContext, &reviewAggregator); err != nil {
-		log.Panic(err)
-	}
-	return reviewAggregator
+	
 }

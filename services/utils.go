@@ -138,9 +138,16 @@ func GetKeyBasedCountForDailyBasis(aggregateResultFromDb []bson.M, aggregator st
 	for _, data := range aggregateResultFromDb {
 		aggregator := fmt.Sprintf("%s", data["_id"].(primitive.M)[aggregator])
 		dateKey := fmt.Sprintf("%s", data["_id"].(primitive.M)["review_date"])
-		count, _ := strconv.Atoi(fmt.Sprintf("%d", data["count"]))
+		xType := fmt.Sprintf("%T", data["count"])
+		var format string
+		if xType == "int32" {		
+			format = "%d"
+		} else{
+			format = "%.0f"
+		}
+		count, _ := strconv.Atoi(fmt.Sprintf(format, data["count"]))
 
-		if keyBasedCount[dateKey] == nil {
+		if keyBasedCount[dateKey] == nil {		
 			keyBasedCount[dateKey] = make(map[string]int)
 		}
 

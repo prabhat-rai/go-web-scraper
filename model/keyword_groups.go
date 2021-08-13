@@ -8,7 +8,7 @@ type (
 		GroupName 		string		  		`json:"group_name" bson:"group_name"`
 		Keywords   		[]string      		`json:"keywords" bson:"keywords"`
 		Active   		bool      			`json:"active,omitempty" bson:"active,omitempty"`
-		Subscribers 	[]string      		`json:"subscribers" bson:"subscribers"`
+		Subscribers 	[]string      		`json:"subscribers,omitempty" bson:"subscribers,omitempty"`
 		SubscribeAction string      		`json:"subscribe_action"`
 	}
 )
